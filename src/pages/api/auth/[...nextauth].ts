@@ -41,6 +41,7 @@ export const authOptions: NextAuthOptions = {
           },
           data: {
             classroomId: userLevel,
+            isTeacher: false,
           }
         });
       }
@@ -49,6 +50,7 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ account, user, profile }) {
       if (profile?.email?.endsWith("@gjp-me.cz")) return true;
+      if (env.TEACHER_EMAILS.includes(profile?.email!)) return true;  // this is just so I can debug with my private email
       return '/begone'
     },
   },
