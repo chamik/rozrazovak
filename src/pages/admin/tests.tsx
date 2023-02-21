@@ -1,10 +1,12 @@
-import type { NextPage } from "next";
+import { type NextPage } from "next";
 import Head from "next/head";
-import { signIn, useSession } from "next-auth/react";
-import { AdminLayout } from "../../components/admin/adminLayout";
-import { NextPageWithLayout } from "../_app";
+import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
 
-const AdminHome: NextPageWithLayout = () => {
+import { NextPageWithLayout } from "../_app";
+import { AdminLayout } from "../../components/admin/adminLayout";
+
+const AdminQuestion: NextPageWithLayout = () => {
     return (
         <>
             <Head>
@@ -14,12 +16,12 @@ const AdminHome: NextPageWithLayout = () => {
             </Head>
 
             <main className="flex min-h-screen flex-col w-full p-16">
-                <h1 className="text-4xl font-bold text-center">Administrátorský panel Rozřazováků</h1>
+                <h1 className="text-4xl font-bold text-center">Testy</h1>
             </main>
         </>
     );
 };
 
-AdminHome.Layout = AdminLayout;
+AdminQuestion.Layout = AdminLayout;
 
-export default AdminHome;
+export default AdminQuestion;

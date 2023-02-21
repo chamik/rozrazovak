@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { Test, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { trpc } from "../utils/trpc";
@@ -30,47 +30,45 @@ export const LoggedInView: React.FC = () => {
             </div>
             <div className="flex flex-col w-full px-8 justify-between">
                 <h1 className="text-5xl font-semibold">Rozřazovací test AJ {year}</h1>
-                {activeTest ? (
+                {user.isTeacher ? (
                     <>
-                        <div className="py-6 text-xl">
-                            <p>{activeTest.grammarA2Amount} otázek</p>
-                            <p>{activeTest.timeLimit} minut</p>
+                        <div className="py-6 text-xl text-center">
+                            <p>Vás už žádné testy nečekají :)</p>
                         </div>
-                        <button className="bg-green-200 hover:bg-green-500 hover:text-white mx-auto px-4 py-1 rounded shadow transition duration-100 w-1/3">Začít test</button>
+                        
+                        <span className="bg-green-200 hover:bg-green-500 hover:text-white text-center mx-auto px-4 py-1 rounded shadow transition duration-100 w-1/3"><Link href="/admin/">Přejít do administrace</Link></span>
                     </>
                 ) : (
                     <>
-                        {user.isTeacher ? (
-                            <>
-                                <div className="py-6 text-xl text-center">
-                                    <p>Vás už žádné testy nečekají :)</p>
-                                </div>
-                                <span className="bg-green-200 hover:bg-green-500 hover:text-white text-center mx-auto px-4 py-1 rounded shadow transition duration-100 w-1/3"><Link href="/admin/">Přejít do administrace</Link></span>
-                            </>
-                        ) : (
-                            <>
-                                <p className="text-center ">Právě pro tebe není zadaný žádný test :(</p>
-                            </>
-                        )}
+                    {activeTest ? (
+                        <StudentView user={user} activeTest={activeTest}/>
+                    ) : (
+                        <>
+                            <p className="text-center ">Právě pro tebe není zadaný žádný test :(</p>
+                        </>
+                    )}
                     </>
-                )}
+                )};
             </div>
-
         </div>
     );
 };
 
-type YearSubProps = {
+type StudentViewProps = {
     user: User,
+    activeTest: Test,
 };
 
-const YearSub: React.FC<YearSubProps> = (props) => {
+const StudentView: React.FC<StudentViewProps> = (props) => {
     const {
         user,
+        activeTest,
     } = props;
 
     return (
-        <></>
+        <>
+            xd
+        </>
     );
 }
 
