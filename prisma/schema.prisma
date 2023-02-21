@@ -49,10 +49,10 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  testSession   TestSession?
-  classroom     Classroom?       @relation(fields: [classroomId], references: [level])
-  classroomId   Int?
-  isTeacher     Boolean     @default(false)
+  testSession   TestSession? @relation(fields: [testSessionId], references: [id])
+
+  isTeacher     Boolean @default(false)
+  testSessionId Int?
 }
 
 model VerificationToken {
@@ -64,27 +64,42 @@ model VerificationToken {
 }
 
 model Question {
-  id            Int           @id @default(autoincrement())
-  question      String
-  rightAnswers  String[]
+  id            Int          @id @default(autoincrement())
+  languageLevel Int
+  questionText  String
+  rightAnswer   String
   wrongAnswers  String[]
-  classroom     Classroom?    @relation(fields: [classroomId], references: [level])
-  classroomId   Int?
-  testSession   TestSession[]
+  questionType  QuestionType
+
+  grammarSessions TestSession[] @relation("GrammarQuestions")
 }
 
-model Classroom {
-  level           Int     @id   // protože maturita je bossfight haha
-  enabled         Boolean
-  questionAmount  Int
-  questions       Question[]
-  user            User[]
+enum QuestionType {
+  GRAMMAR
+  READING
+  LISTENING
+}
+
+model Test {
+  id        Int @id @default(autoincrement())
+  class     Int @unique // There can only be one test for each class at a time
+  timeLimit Int // in minutes
+
+  // amount of questions for the grammar part
+  grammarA2Amount Int
+  grammarB1Amount Int
+  grammarB2Amount Int
+  grammarC1Amount Int
+  
+  TestSession     TestSession[]
 }
 
 model TestSession {
-  id        Int        @id @default(autoincrement())
-  userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questions Question[]
-  expires   DateTime
+  id        Int      @id @default(autoincrement())
+  Test      Test     @relation(fields: [testId], references: [id])
+  startTime DateTime
+
+  grammarQuestions Question[] @relation("GrammarQuestions")
+  User             User[]
+  testId           Int
 }
