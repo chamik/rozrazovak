@@ -22,35 +22,31 @@ export const authOptions: NextAuthOptions = {
             email: user.email!,
           },
           data: {
+            classYear: 0,
             isTeacher: true,
           }
         });
+      } else {
+        const userClassYear = parseUserLevel(user.email!);
 
-        return session;
-      }
-
-      const userLevel = parseUserLevel(user.email!);
-      const classroomIds = (await prisma.classroom.findMany({ select: { level: true } })).map(x => x.level)
-
-      console.log({classroomIds, userLevel})
-
-      if (classroomIds.includes(userLevel!)) {
         await prisma.user.update({
           where: {
             email: user.email!,
           },
           data: {
-            classroomId: userLevel,
+            classYear: userClassYear,
             isTeacher: false,
           }
-        });
+        })
       }
 
       return session;
     },
     async signIn({ account, user, profile }) {
-      if (profile?.email?.endsWith("@gjp-me.cz")) return true;
-      if (env.TEACHER_EMAILS.includes(profile?.email!)) return true;  // this is just so I can debug with my private email
+      if (profile === undefined) return '/begone';
+
+      if (profile.email?.endsWith("@gjp-me.cz")) return true;
+      if (env.TEACHER_EMAILS.includes(profile.email!)) return true;  // this is just so I can debug with my private email
       return '/begone'
     },
   },
@@ -73,7 +69,7 @@ function parseUserLevel(email: string) {
   const currentYear = date.getFullYear();
   const currentMonth = date.getMonth();
 
-  const userYear = 2000 + parseInt(emailId?.slice(0, 2)!);
+  const userYear = 2000 + parseInt(emailId!.slice(0, 2)!);
 
   let level = 0
   if (emailId?.slice(2, 4) == '08')

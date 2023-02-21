@@ -49,10 +49,12 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  testSessionId Int?
   testSession   TestSession? @relation(fields: [testSessionId], references: [id])
 
+  classYear     Int     @default(0)
   isTeacher     Boolean @default(false)
-  testSessionId Int?
 }
 
 model VerificationToken {
@@ -81,25 +83,27 @@ enum QuestionType {
 }
 
 model Test {
-  id        Int @id @default(autoincrement())
-  class     Int @unique // There can only be one test for each class at a time
-  timeLimit Int // in minutes
+  id          Int @id @default(autoincrement())
+  class       Int @unique // There can only be one test for each class at a time
+  timeLimit   Int // in minutes
+  started     Boolean
 
   // amount of questions for the grammar part
   grammarA2Amount Int
   grammarB1Amount Int
   grammarB2Amount Int
   grammarC1Amount Int
-  
+
   TestSession     TestSession[]
 }
 
 model TestSession {
   id        Int      @id @default(autoincrement())
-  Test      Test     @relation(fields: [testId], references: [id])
   startTime DateTime
+
+  testId    Int
+  Test      Test     @relation(fields: [testId], references: [id])
 
   grammarQuestions Question[] @relation("GrammarQuestions")
   User             User[]
-  testId           Int
 }
