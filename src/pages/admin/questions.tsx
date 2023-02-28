@@ -1,4 +1,4 @@
-import { type NextPage } from "next";
+import { GetServerSideProps, type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -6,6 +6,25 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { NextPageWithLayout } from "../_app";
 import { AdminLayout } from "../../components/admin/adminLayout";
 import { trpc } from "../../utils/trpc";
+import { getServerAuthSession } from "../../server/common/get-server-auth-session";
+import { Question } from "@prisma/client";
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const session = await getServerAuthSession(ctx);
+
+    if (!session) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: { session },
+    };
+};
 
 const AdminQuestion: NextPageWithLayout = () => {
     const questionsData = trpc.admin.getAllQuestions.useQuery();
@@ -21,13 +40,35 @@ const AdminQuestion: NextPageWithLayout = () => {
             <main className="flex min-h-screen flex-col w-full p-16">
                 <h1 className="text-4xl font-bold text-center">Otázky</h1>
 
-                {questions.map(question => (
-                    <p>{question.questionText}</p>
-                ))}
+                <QuestionsListing questions={questions} />
             </main>
         </>
     );
 };
+
+type QuestionsListingProps = {
+    questions: Question[] | undefined
+};
+
+const QuestionsListing: React.FC<QuestionsListingProps> = (props) => {
+    const {
+        questions,
+    } = props;
+
+    if (!questions) return (
+        <>
+            unable to load questions, call Kubík, something went wrong :p
+        </>
+    );
+
+    return (
+        <>
+            {questions.map(question => (
+                <p>{question.questionText}</p>
+            ))}
+        </>
+    );
+}
 
 AdminQuestion.Layout = AdminLayout;
 

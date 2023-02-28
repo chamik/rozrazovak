@@ -1,8 +1,26 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { signIn, useSession } from "next-auth/react";
 import { AdminLayout } from "../../components/admin/adminLayout";
 import { NextPageWithLayout } from "../_app";
+import { getServerAuthSession } from "../../server/common/get-server-auth-session";
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const session = await getServerAuthSession(ctx);
+
+    if (!session) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: { session },
+    };
+};
 
 const AdminHome: NextPageWithLayout = () => {
     return (

@@ -20,11 +20,7 @@ const ADMIN_TABS = [
 
 export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
     const router = useRouter();
-    const { data: session } = useSession()
-
-    if (!session) {
-        router.replace('/')
-    }
+    const { data: session } = useSession();
 
     return (
         <div className="flex flex-row">
