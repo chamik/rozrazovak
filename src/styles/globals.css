@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .question-input {
+        @apply px-3 h-12 rounded-xl bg-slate-100/[.3] shadow-md hover:bg-slate-100 focus:bg-slate-100 transition-colors
+    }
+}
+
 body {
     @apply bg-slate-200 text-slate-900;
 }

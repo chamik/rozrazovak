@@ -66,12 +66,13 @@ model VerificationToken {
 }
 
 model Question {
-  id            Int          @id @default(autoincrement())
-  languageLevel Int
-  questionText  String
-  rightAnswer   String
-  wrongAnswers  String[]
-  questionType  QuestionType
+  id            Int           @id @default(autoincrement())
+  languageLevel Int           @default(0)
+  questionText  String        @default("")
+  rightAnswer   String        @default("")
+  wrongAnswers  String[]      @default(["", "", ""])
+  questionType  QuestionType  @default(GRAMMAR)
+  pointAmount   Int           @default(1)
 
   grammarSessions TestSession[] @relation("GrammarQuestions")
 }

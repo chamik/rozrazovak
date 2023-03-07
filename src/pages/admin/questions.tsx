@@ -8,6 +8,7 @@ import { AdminLayout } from "../../components/admin/adminLayout";
 import { trpc } from "../../utils/trpc";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { Question } from "@prisma/client";
+import { QuestionEdit } from "../../components/admin/questionEdit";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -29,6 +30,23 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 const AdminQuestion: NextPageWithLayout = () => {
     const questionsData = trpc.admin.getAllQuestions.useQuery();
     const questions = questionsData.data?.questions;
+    const utils = trpc.useContext();
+
+    const newMutation = trpc.admin.newQuestion.useMutation({
+        onSuccess() {
+            utils.admin.getAllQuestions.invalidate()
+        },
+    });
+
+    const newQuestion = () => {
+        newMutation.mutate({
+            questionText: "Text otázky",
+            languageLevel: 0,
+            pointAmount: 1,
+            rightAnswer: "Správná odpověď",
+            wrongAnswers: ["Špatná odpověď 1", "Špatná odpověď 2", "Špatná odpověď 3"],
+        });
+    }
 
     return (
         <>
@@ -38,9 +56,13 @@ const AdminQuestion: NextPageWithLayout = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className="flex min-h-screen flex-col w-full p-16">
-                <h1 className="text-4xl font-bold text-center">Otázky</h1>
+                <h1 className="text-4xl font-bold text-center pb-10">Otázky</h1>
 
                 <QuestionsListing questions={questions} />
+
+                <div>
+                    <button onClick={() => newQuestion()}>vytvořit otázku</button>
+                </div>
             </main>
         </>
     );
@@ -62,11 +84,11 @@ const QuestionsListing: React.FC<QuestionsListingProps> = (props) => {
     );
 
     return (
-        <>
+        <div className="flex flex-col ">
             {questions.map(question => (
-                <p>{question.questionText}</p>
+                <QuestionEdit question={question}/>
             ))}
-        </>
+        </div>
     );
 }
 
