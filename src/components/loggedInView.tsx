@@ -28,7 +28,7 @@ export const LoggedInView: React.FC = () => {
 
                 <button className="bg-slate-100 hover:bg-red-600 hover:text-white px-4 py-1 rounded shadow transition duration-100 w-2/3" onClick={() => signOut()}>Odhlásit se</button>
             </div>
-            <div className="flex flex-col w-full px-8 justify-between">
+            <div className="flex flex-col w-full px-8">
                 <h1 className="text-5xl font-semibold">Rozřazovací test AJ {year}</h1>
                 {user.isTeacher ? (
                     <>
@@ -44,7 +44,7 @@ export const LoggedInView: React.FC = () => {
                         <StudentView user={user} activeTest={activeTest}/>
                     ) : (
                         <>
-                            <p className="text-center ">Právě pro tebe není zadaný žádný test :(</p>
+                            <p className="text-center mt-10">Právě pro tebe není zadaný žádný test :(</p>
                         </>
                     )}
                     </>
