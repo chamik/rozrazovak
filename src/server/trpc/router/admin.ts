@@ -72,4 +72,59 @@ export const adminRouter = router({
       }
     });
   }),
+
+  getAllTests: protectedProcedure.query(async ({ ctx }) => {
+    if (!isTeacher(ctx)) return null;
+
+    const tests = await prisma.test.findMany();
+
+    return {
+      tests: tests!,
+    };
+  }),
+
+  saveTest: protectedProcedure.input(z.object({
+    id: z.number(),
+    timeLimit: z.number().min(1),
+    grammarA2Amount: z.number().min(0),
+    grammarB1Amount: z.number().min(0),
+    grammarB2Amount: z.number().min(0),
+    grammarC1Amount: z.number().min(0),
+  })).mutation(async ({ ctx, input }) => {
+    if (!isTeacher(ctx)) return null;
+
+    await prisma.test.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        ...input,
+      }
+    })
+  }),
+
+  deleteTest: protectedProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+    if (!isTeacher(ctx)) return null;
+
+    await prisma.test.delete({
+      where: {
+        id: input.testId
+      }
+    })
+  }),
+
+  startTest: protectedProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+    if (!isTeacher(ctx)) return null;
+
+    await prisma.test.update({
+      where: {
+        id: input.testId
+      },
+      data: {
+        started: true,
+      }
+    })
+  }),
+
+  
 });
