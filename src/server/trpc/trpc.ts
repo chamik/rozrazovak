@@ -36,3 +36,22 @@ const isAuthed = t.middleware(({ ctx, next }) => {
  * Protected procedure
  **/
 export const protectedProcedure = t.procedure.use(isAuthed);
+
+const isTeacher = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const user = await ctx.prisma.user.findFirst({ where: { email: ctx.session.user.email }});
+  if (!user || !user.isTeacher)
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+export const teacherProcedure = t.procedure.use(isTeacher);
