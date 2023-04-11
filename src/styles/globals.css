@@ -6,8 +6,12 @@
     .question-input {
         @apply px-3 h-12 rounded-xl bg-slate-100/[.3] shadow-md hover:bg-slate-100 focus:bg-slate-100 transition-colors
     }
-}
 
-body {
-    @apply bg-slate-200 text-slate-900;
+    .purple-gradient {
+        @apply bg-gradient-to-br from-purple-200/[.8] to-purple-300
+    }
+
+    .major-button {
+        @apply w-52 px-4 py-3 mx-auto shadow-sm font-extrabold text-xl rounded-3xl bg-gradient-to-br from-purple-300/[.4] to-purple-500/[.4] hover:ring-2 ring-purple-300
+    }
 }

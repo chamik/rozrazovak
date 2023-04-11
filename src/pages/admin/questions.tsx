@@ -9,6 +9,8 @@ import { trpc } from "../../utils/trpc";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { Question } from "@prisma/client";
 import { QuestionEdit } from "../../components/admin/questionEdit";
+import Plus from "./../../components/svg/plus.svg";
+import { Toolbar } from "../../components/admin/toolbar";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -57,11 +59,17 @@ const AdminQuestion: NextPageWithLayout = () => {
             </Head>
             <main className="flex min-h-screen flex-col w-full p-16">
                 <h1 className="text-4xl font-bold text-center pb-10">Otázky</h1>
+                <div className="flex flex-row">
+                    <div className="w-full">
+                        <QuestionsListing questions={questions} />
 
-                <QuestionsListing questions={questions} />
-
-                <div>
-                    <button onClick={() => newQuestion()}>vytvořit otázku</button>
+                        <div>
+                            <button onClick={() => newQuestion()}>vytvořit otázku</button>
+                        </div>
+                    </div>
+                    <div className="flex flex-col mx-auto ml-10 w-32">
+                        <Toolbar addCallback={() => console.log("hoj")} saveCallback={() => console.log("yo")}/>
+                    </div>
                 </div>
             </main>
         </>

@@ -18,7 +18,12 @@ export const TestEdit: React.FC<TestEditProps> = props => {
     const saveMutation = trpc.admin.saveTest.useMutation();
     const deleteMutation = trpc.admin.deleteTest.useMutation({
         onSuccess() {
-            utils.admin.getAllQuestions.invalidate();
+            utils.admin.getAllTests.invalidate();
+        }
+    });
+    const startTestMutation = trpc.admin.startTest.useMutation({
+        onSuccess() {
+            utils.admin.getAllTests.invalidate();
         }
     });
 
@@ -43,36 +48,40 @@ export const TestEdit: React.FC<TestEditProps> = props => {
         deleteMutation.mutate({testId: test.id});
     }
 
+    const startTest = () => {
+        startTestMutation.mutate({testId: test.id});
+    }
+
     return (
         <div className="flex flex-col w-full mx-auto rounded-md py-8 pl-8 pr-16 bg-slate-300 shadow-md mb-8">
             <div className="flex flex-row justify-between">
                 <h3 className="text-xl font-bold">Test pro třídu {toRoman(test.class)}.</h3>
-                <button type="button">
+                <button type="button" disabled={test.started} onClick={() => startTest()}>
                     spustit
                 </button>
             </div>
             <div className="flex flex-col">
                 <label className="rounded-xl text-lg font-bold my-auto">Čas pro testovaného</label>
                 <div>    
-                    <input type="number" ref={testTimeRef} name="pointAmount" className="p-3 rounded-xl mt-2 question-input" defaultValue={test.timeLimit}/>
+                    <input type="number" disabled={test.started} ref={testTimeRef} name="pointAmount" className="p-3 rounded-xl mt-2 question-input" defaultValue={test.timeLimit}/>
                 </div>
                 <label className="rounded-xl text-lg font-bold my-auto mt-10">Počet otázek různých obtížností</label>
                 <div className="flex flex-row">
                     <label className="rounded-xl text-lg font-bold my-auto mr-4">A2</label>
-                    <input type="number" ref={testGrammarA2AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarA2Amount}/>
+                    <input type="number" disabled={test.started} ref={testGrammarA2AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarA2Amount}/>
 
                     <label className="rounded-xl text-lg font-bold my-auto mr-4">B1</label>
-                    <input type="number" ref={testGrammarB1AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarB1Amount}/>
+                    <input type="number" disabled={test.started} ref={testGrammarB1AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarB1Amount}/>
 
                     <label className="rounded-xl text-lg font-bold my-auto mr-4">B2</label>
-                    <input type="number" ref={testGrammarB2AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarB2Amount}/>
+                    <input type="number" disabled={test.started} ref={testGrammarB2AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarB2Amount}/>
 
                     <label className="rounded-xl text-lg font-bold my-auto mr-4">C1</label>
-                    <input type="number" ref={testGrammarC1AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarC1Amount}/>
+                    <input type="number" disabled={test.started} ref={testGrammarC1AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarC1Amount}/>
                 </div>
                 <div>
-                    <button className="p-3 rounded-xl w-full mt-10 question-input hover:bg-green-500" onClick={() => saveTest()}>uložit</button>
-                    <button className="p-3 rounded-xl w-full mt-2 question-input hover:bg-red-600" onClick={() => deleteTest()}>smazat</button>
+                    <button disabled={test.started} className="p-3 rounded-xl w-full mt-10 question-input hover:bg-green-500" onClick={() => saveTest()}>uložit</button>
+                    <button disabled={test.started} className="p-3 rounded-xl w-full mt-2 question-input hover:bg-red-600" onClick={() => deleteTest()}>smazat</button>
                 </div>
             </div>
         </div>
