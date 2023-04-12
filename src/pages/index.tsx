@@ -1,8 +1,6 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import { signIn, useSession } from "next-auth/react";
 import { LoggedInView } from "../components/loggedInView";
-import { Suspense } from "react";
 
 const Home: NextPage = () => {
     const { data: session } = useSession()
@@ -10,11 +8,6 @@ const Home: NextPage = () => {
 
     return (
         <>
-            <Head>
-                <title>Rozřazovák {year}</title>
-                <meta name="description" content="Rozřazovací testy pro GJP-ME." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
             <main className="flex flex-col items-center justify-center h-screen purple-gradient">
                 <div className="m-auto">
                     {/* <h1 className="text-2xl font-semibold mt-auto text-center mb-4">Rozřazovací test AJ {year}</h1> */}

@@ -3,14 +3,14 @@ import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-import { NextPageWithLayout } from "../_app";
-import { AdminLayout } from "../../components/admin/adminLayout";
-import { trpc } from "../../utils/trpc";
-import { getServerAuthSession } from "../../server/common/get-server-auth-session";
+import { NextPageWithLayout } from "../../_app";
+import { AdminLayout } from "../../../components/admin/adminLayout";
+import { trpc } from "../../../utils/trpc";
+import { getServerAuthSession } from "../../../server/common/get-server-auth-session";
 import { Question } from "@prisma/client";
-import { QuestionEdit } from "../../components/admin/questionEdit";
+import { QuestionEdit } from "../../../components/admin/questionEdit";
 import Plus from "./../../components/svg/plus.svg";
-import { Toolbar } from "../../components/admin/toolbar";
+import { Toolbar } from "../../../components/admin/toolbar";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);

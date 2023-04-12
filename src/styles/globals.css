@@ -12,6 +12,6 @@
     }
 
     .major-button {
-        @apply w-52 px-4 py-3 mx-auto shadow-sm font-extrabold text-xl rounded-3xl bg-gradient-to-br from-purple-300/[.4] to-purple-500/[.4] hover:ring-2 ring-purple-300
+        @apply w-52 px-4 py-3 mx-auto shadow-sm font-extrabold text-xl rounded-3xl border bg-purple-100 text-purple-800 hover:ring-2 ring-purple-300
     }
 }

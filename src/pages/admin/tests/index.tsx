@@ -3,11 +3,11 @@ import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
-import { NextPageWithLayout } from "../_app";
-import { AdminLayout } from "../../components/admin/adminLayout";
-import { TestEdit } from "../../components/admin/testEdit";
+import { NextPageWithLayout } from "../../_app";
+import { AdminLayout } from "../../../components/admin/adminLayout";
+import { TestEdit } from "../../../components/admin/testEdit";
 import { Test } from "@prisma/client";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "../../../utils/trpc";
 
 const AdminQuestion: NextPageWithLayout = () => {
     const testsData = trpc.admin.getAllTests.useQuery();

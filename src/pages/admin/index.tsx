@@ -27,8 +27,6 @@ const AdminHome: NextPageWithLayout = () => {
         <>
             <Head>
                 <title>Rozřazovák | Admin panel</title>
-                <meta name="description" content="Admin panel" />
-                <link rel="icon" href="/favicon.ico" />
             </Head>
 
             <main className="flex min-h-screen flex-col w-full p-16">

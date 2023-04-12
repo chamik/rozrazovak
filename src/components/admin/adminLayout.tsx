@@ -1,11 +1,12 @@
 import { signOut, useSession } from "next-auth/react";
+import { redirect } from "next/dist/server/api-utils";
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import type React from 'react';
 
 const ADMIN_TABS = [
     {
-        name: 'Index',
+        name: 'Přehled',
         route: '/admin',
     },
     {
@@ -22,31 +23,41 @@ export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
     const router = useRouter();
     const { data: session } = useSession();
 
+    if (!session)
+        router.push('/');
+
+    const user = session?.user;
+
     // TODO: userouter to color the currently used tab
     return (
-        <div className="flex flex-row">
-            <nav className="flex flex-col bg-blue-200 w-96 justify-between">
-                <div className="flex flex-col gap-2 ml-8 pt-8 top-0 sticky">
+        <div className="flex flex-col purple-gradient">
+            <nav className="border-b-2 mb-10 flex flex-row justify-around w-full h-24 bg-purple-100 rounded-b-3xl">
+                <div className="flex flex-row h-full p-2 gap-6 ml-10">
                     {ADMIN_TABS.map(route => (
                         <Link
                             key={route.route}
                             href={route.route}
                         >
-                            <a className="text-2xl font-semibold hover:bg-slate-200 rounded-l-md p-4">{route.name}</a>
+                            <a className="text-2xl my-auto">{route.name}</a>
                         </Link>
                     ))}
                 </div>
-
-                <div className="flex flex-col w-full pb-10 bottom-0 sticky">
-                    <img className="rounded-full mx-auto" width={180} src={session!.user!.image!} alt="User profile picture" />
-                    <h3 className="text-2xl font-medium mt-2 mx-auto">{session!.user!.name!}</h3>
-                    <button className="bg-slate-100 hover:bg-red-600 hover:text-white px-4 py-1 rounded shadow transition duration-100 w-2/3 mx-auto mt-6" onClick={() => {
-                        signOut();
-                        router.replace('/');
-                    }}>Odhlásit se</button>
+                <div className="flex h-full ml-auto mr-20 p-2">
+                    <img className="rounded-full w-16 my-auto" src={user?.image!} alt="User profile picture" />
+                    <div className="p-3 my-auto mx-4">
+                        <p className="font-extrabold text-lg">{user?.name}</p>
+                        <button className="text-slate-500 hover:underline hover:font-semibold" onClick={() => signOut()}>
+                            Odhlásit se
+                        </button>
+                    </div>
                 </div>
             </nav>
-            {children}
+            <div className="w-[70rem] bg-purple-100 mx-auto rounded-2xl shadow">
+                {children}
+            </div>
+            <footer className="flex flex-row justify-start w-full h-14 px-8 gap-4">
+                <p className="font-semibold my-auto">Rozřazovák 2023</p>
+            </footer>
         </div>
     )
 };

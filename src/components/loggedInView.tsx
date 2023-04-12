@@ -21,12 +21,12 @@ export const LoggedInView: React.FC = () => {
         <div className="bg-slate-50 rounded-xl flex flex-row w-[60rem] justify-between p-10 m-auto shadow">
             <div className="flex flex-col w-96 items-center gap-3 justify-between p-10">
                 <div className="pb-6 text-center">
-                    <img className="rounded-full w-40 mx-auto" src={session!.user!.image!} alt="User profile picture" />
+                    <img className="rounded-full w-44 mx-auto" src={session!.user!.image!} alt="User profile picture" />
                     <h3 className="text-2xl font-extrabold mt-4">{session!.user!.name!}</h3>
                     <p className="text-slate-700">{!user?.isTeacher ? toRoman(user.classYear) + ". ročník" : "Učitel"}</p>
                 </div>
 
-                <button className="text-slate-700 hover:bg-red-600 hover:text-white px-4 py-2 rounded-3xl font-semibold transition duration-100 w-2/3" onClick={() => signOut()}>Odhlásit se</button>
+                <button className="text-slate-700 bg-purple-100 hover:bg-red-600 hover:text-white px-4 py-2 rounded-3xl font-semibold transition duration-100 w-2/3" onClick={() => signOut()}>Odhlásit se</button>
             </div>
             <div className="flex flex-col w-full px-8">
                 {user.isTeacher ? (
@@ -66,7 +66,7 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
-                    <p className="text-xl mx-6 my-auto"><span className="font-bold">56</span> otázek</p>
+                    <p className="text-xl mx-6 my-auto"><span className="font-bold">56</span> gramatických otázek</p>
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/bolt-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
@@ -88,7 +88,7 @@ const TeacherView: React.FC = () => {
                 <p>Vás už žádné testy nečekají :)</p>
             </div>
                         
-            <div className="mx-auto mt-auto px-4 major-button"><Link href="/admin/"><p className="text-center">Přejít do administrace</p></Link></div>
+            <div className="mx-auto mt-auto px-4 major-button cursor-pointer"><Link href="/admin/"><p className="text-center">Přejít do administrace</p></Link></div>
         </div>
     );
 }
