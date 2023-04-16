@@ -12,6 +12,16 @@ export const adminRouter = router({
     };
   }),
 
+  getQuestionById: teacherProcedure.input(z.object({ questionId: z.number() })).query(async ({ ctx, input }) => {
+    const question = await prisma.question.findFirst({
+      where: {
+        id: input.questionId
+      }
+    });
+
+    return question;
+  }),
+
   saveQuestion: teacherProcedure.input(z.object({
     questionId: z.number(),
     questionText: z.string().min(1),

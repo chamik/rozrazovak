@@ -1,6 +1,7 @@
 import { Test, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { toRoman } from "../utils/functions";
 import { trpc } from "../utils/trpc";
 
 export const LoggedInView: React.FC = () => {
@@ -91,12 +92,4 @@ const TeacherView: React.FC = () => {
             <div className="mx-auto mt-auto px-4 major-button cursor-pointer"><Link href="/admin/"><p className="text-center">Přejít do administrace</p></Link></div>
         </div>
     );
-}
-
-function toRoman(num: number | null): string {
-    if (num == null) return "učitel";
-    if (num >= 5) return "V" + toRoman(num - 5);
-    if (num >= 4) return "IV" + toRoman(num - 4);
-    if (num >= 1) return "I" + toRoman(num - 1);
-    return "";
 }

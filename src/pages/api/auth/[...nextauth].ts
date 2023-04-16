@@ -61,7 +61,7 @@ export const authOptions: NextAuthOptions = {
 
 export default NextAuth(authOptions);
 
-// Mrdám školní emaily
+// TODO: write a test for this or smth
 function parseUserLevel(email: string) {
   const emailId = email.split('@')[0];
 
@@ -77,7 +77,7 @@ function parseUserLevel(email: string) {
   else
     level = currentYear - userYear + 4;
   
-  // Mrdám školní roky
+  // školní roky :)
   // currentMonth se počítá od nuly, takže září je 8
   if (8 <= currentMonth && currentMonth <= 11 )
     level += 1;

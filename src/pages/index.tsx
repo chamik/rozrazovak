@@ -10,7 +10,6 @@ const Home: NextPage = () => {
         <>
             <main className="flex flex-col items-center justify-center h-screen purple-gradient">
                 <div className="m-auto">
-                    {/* <h1 className="text-2xl font-semibold mt-auto text-center mb-4">Rozřazovací test AJ {year}</h1> */}
                     {session ? (<LoggedInView />)
                     : (
                             <div className="bg-slate-50 rounded-xl flex flex-row w-[55rem] justify-between p-10 mx-auto shadow text-center">

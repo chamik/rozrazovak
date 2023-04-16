@@ -1,6 +1,7 @@
 import { Test } from "@prisma/client"
 import { useRef } from "react";
 import { AppRouter } from "../../server/trpc/router/_app";
+import { toRoman } from "../../utils/functions";
 import { AppRouterTypes, trpc } from "../../utils/trpc";
 
 export type TestEditProps = {
@@ -86,12 +87,4 @@ export const TestEdit: React.FC<TestEditProps> = props => {
             </div>
         </div>
     );
-}
-
-function toRoman(num: number | null): string {
-    if (num == null) return "učitel";
-    if (num >= 5) return "V" + toRoman(num - 5);
-    if (num >= 4) return "IV" + toRoman(num - 4);
-    if (num >= 1) return "I" + toRoman(num - 1);
-    return "";
 }
