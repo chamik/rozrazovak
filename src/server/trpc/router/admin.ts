@@ -52,7 +52,7 @@ export const adminRouter = router({
     rightAnswer: z.string().min(1),
     wrongAnswers: z.array(z.string()),
   })).mutation(async ({ ctx, input }) => {
-    const question = await prisma.question.create({
+    const question = await ctx.prisma.question.create({
       data: {
         questionText: input.questionText,
         languageLevel: input.languageLevel,
@@ -61,6 +61,8 @@ export const adminRouter = router({
         wrongAnswers: input.wrongAnswers,
       }
     });
+
+    return question;
   }),
 
   deleteQuestion: teacherProcedure.input(z.object({ id: z.number() })).mutation(async ({ ctx, input }) => {

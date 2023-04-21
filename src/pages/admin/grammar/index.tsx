@@ -9,7 +9,7 @@ import { GrammarEdit } from "../../../components/admin/grammarEdit";
 import { Modal } from "../../../components/admin/modal";
 import { useRouter, useSearchParams } from "next/navigation";
 import { numToLevel } from "../../../utils/functions";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -31,6 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 const AdminQuestion: NextPageWithLayout = () => {
     const questionsData = trpc.admin.getAllQuestions.useQuery();
     const questionQuery = trpc.admin.getQuestionById.useMutation();
+    const newQuestionMutation = trpc.admin.newQuestion.useMutation();
     const questions = questionsData.data?.questions.sort((a, b) => a.id - b.id);
     const utils = trpc.useContext();
 
@@ -50,7 +51,11 @@ const AdminQuestion: NextPageWithLayout = () => {
         if (!question)
             return;
 
-        setQuestionId(id);
+        setQuestion(question);
+    }
+
+    const setQuestion = (question: Question) => {
+        setQuestionId(question.id);
         setQuestionText(question.questionText);
         setQuestionLevel(question.languageLevel);
         setQuestionRightAnswer(question.rightAnswer);
@@ -67,7 +72,19 @@ const AdminQuestion: NextPageWithLayout = () => {
             rightAnswer: questionRightAnswer,
             wrongAnswers: questionWrongAnswers,
         });
-        utils.admin.getAllQuestions.invalidate();
+    }
+
+    const newQuestion = async () => {
+        const question = await newQuestionMutation.mutateAsync({
+            questionText: "Text otázky",
+            languageLevel: 0,
+            pointAmount: 1,
+            rightAnswer: "ahoj",
+            wrongAnswers: ["ne", "ne", "ne"],
+        });
+
+        setQuestion(question);
+        router.push(`/admin/grammar?id=${question.id}`)
     }
 
     if (!questions ) return (
@@ -82,6 +99,7 @@ const AdminQuestion: NextPageWithLayout = () => {
                 {params.has("id") && <Modal onClose={() => {
                     saveQuestion();
                     router.push('/admin/grammar');
+                    utils.admin.getAllQuestions.invalidate();
                     }}>
                     <GrammarEdit binding={{
                         questionId,
@@ -96,7 +114,12 @@ const AdminQuestion: NextPageWithLayout = () => {
                         setQuestionWrongAnswers,
                     }}/>
                 </Modal>}
-                <div className="flex flex-col w-full m-6 rounded-3xl mx-auto">
+                <div className="flex flex-col w-full m-6 rounded-3xl mx-auto -mt-5">
+                    <button className="ml-auto my-3 mx-0 bg-purple-800 shadow-sm font-extrabold py-2 px-4 rounded-3xl text-slate-200 hover:ring-2" onClick={() => {
+                        newQuestion();
+                    }}>
+                        Vytvořit otázku
+                    </button>
                     <div className="flex justify-start px-8 py-2 bg-purple-200 rounded-3xl text-purple-800 mb-6 text-left font-semibold">
                         <p className="w-10 mr-4">ID</p>
                         <p className="w-80 mr-4">Otázka</p>
