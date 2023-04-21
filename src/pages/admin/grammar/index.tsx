@@ -63,8 +63,8 @@ const AdminQuestion: NextPageWithLayout = () => {
     }
 
     const saveMutation = trpc.admin.saveQuestion.useMutation();
-    const saveQuestion = () => {
-        saveMutation.mutate({
+    const saveQuestion = async () => {
+        await saveMutation.mutateAsync({
             questionId: questionId,
             questionText: questionText,
             languageLevel: questionLevel,
@@ -96,8 +96,8 @@ const AdminQuestion: NextPageWithLayout = () => {
     return (
         <>
             <main className="flex-col w-full">
-                {params.has("id") && <Modal onClose={() => {
-                    saveQuestion();
+                {params.has("id") && <Modal onClose={async () => {
+                    await saveQuestion();
                     router.push('/admin/grammar');
                     utils.admin.getAllQuestions.invalidate();
                     }}>
@@ -115,7 +115,7 @@ const AdminQuestion: NextPageWithLayout = () => {
                     }}/>
                 </Modal>}
                 <div className="flex flex-col w-full m-6 rounded-3xl mx-auto -mt-5">
-                    <button className="ml-auto my-3 mx-0 bg-purple-800 shadow-sm font-extrabold py-2 px-4 rounded-3xl text-slate-200 hover:ring-2" onClick={() => {
+                    <button className="ml-auto my-3 mx-0 bg-purple-800 shadow-sm font-extrabold py-2 px-5 rounded-3xl text-slate-200 hover:ring-2" onClick={() => {
                         newQuestion();
                     }}>
                         Vytvořit otázku
@@ -127,6 +127,9 @@ const AdminQuestion: NextPageWithLayout = () => {
                         <p className="w-10 mr-4">Úroveň</p>
                     </div>
                     <QuestionsListing questions={questions} getQuestionDataCallback={(id) => getQuestionData(id)}/>
+                    <button className="mt-4 mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5" onClick={() => newQuestion()}>
+                        Vytvořit novou otázku
+                    </button>
                 </div>
             </main>
         </>
