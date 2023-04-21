@@ -12,7 +12,8 @@ export const adminRouter = router({
     };
   }),
 
-  getQuestionById: teacherProcedure.input(z.object({ questionId: z.number() })).query(async ({ ctx, input }) => {
+  /** This is not a mutation really, just an ugly way to trick trpc */
+  getQuestionById: teacherProcedure.input(z.object({ questionId: z.number() })).mutation(async ({ ctx, input }) => {
     const question = await prisma.question.findFirst({
       where: {
         id: input.questionId

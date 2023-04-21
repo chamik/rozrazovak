@@ -30,16 +30,44 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 const AdminQuestion: NextPageWithLayout = () => {
     const questionsData = trpc.admin.getAllQuestions.useQuery();
+    const questionQuery = trpc.admin.getQuestionById.useMutation();
     const questions = questionsData.data?.questions.sort((a, b) => a.id - b.id);
     const utils = trpc.useContext();
 
     const router = useRouter();
     const params = useSearchParams();
 
-    const [qText, setQText] = useState('')
+    const [questionId, setQuestionId] = useState(0);
+    const [questionText, setQuestionText] = useState("")
+    const [questionLevel, setQuestionLevel] = useState(0)
+    const [questionRightAnswer, setQuestionRightAnswer] = useState("")
+    const [questionWrongAnswers, setQuestionWrongAnswers] = useState([""]);
 
-    const getQuestionData = (id: number) => {
-        setQText("ahoj")
+    const getQuestionData = async (id: number) => {
+        const question = await questionQuery.mutateAsync({questionId: id})
+        // I think it's okay to use ! here because the data will be fetched based on ids that are listed
+        
+        if (!question)
+            return;
+
+        setQuestionId(id);
+        setQuestionText(question.questionText);
+        setQuestionLevel(question.languageLevel);
+        setQuestionRightAnswer(question.rightAnswer);
+        setQuestionWrongAnswers(question.wrongAnswers);
+    }
+
+    const saveMutation = trpc.admin.saveQuestion.useMutation();
+    const saveQuestion = () => {
+        saveMutation.mutate({
+            questionId: questionId,
+            questionText: questionText,
+            languageLevel: questionLevel,
+            pointAmount: 1,
+            rightAnswer: questionRightAnswer,
+            wrongAnswers: questionWrongAnswers,
+        });
+        utils.admin.getAllQuestions.invalidate();
     }
 
     if (!questions ) return (
@@ -52,10 +80,21 @@ const AdminQuestion: NextPageWithLayout = () => {
         <>
             <main className="flex-col w-full">
                 {params.has("id") && <Modal onClose={() => {
+                    saveQuestion();
                     router.push('/admin/grammar');
-                    console.log(`saving ${qText}`)
                     }}>
-                    <GrammarEdit text={qText} setText={setQText}/>
+                    <GrammarEdit binding={{
+                        questionId,
+                        setQuestionId,
+                        questionText,
+                        setQuestionText,
+                        questionLevel,
+                        setQuestionLevel,
+                        questionRightAnswer,
+                        setQuestionRightAnswer,
+                        questionWrongAnswers,
+                        setQuestionWrongAnswers,
+                    }}/>
                 </Modal>}
                 <div className="flex flex-col w-full m-6 rounded-3xl mx-auto">
                     <div className="flex justify-start px-8 py-2 bg-purple-200 rounded-3xl text-purple-800 mb-6 text-left font-semibold">
