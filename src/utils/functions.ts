@@ -15,3 +15,12 @@ export function numToLevel(num: number): string {
     else if (num == 5) return "C2";
     else return "";
 }
+
+export const languageLevels = [
+    { id:0, name: "A1" },
+    { id:1, name: "A2" },
+    { id:2, name: "B1" },
+    { id:3, name: "B2" },
+    { id:4, name: "C1" },
+    { id:5, name: "C2" },
+]

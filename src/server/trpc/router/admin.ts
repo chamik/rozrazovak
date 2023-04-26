@@ -26,7 +26,7 @@ export const adminRouter = router({
   saveQuestion: teacherProcedure.input(z.object({
     questionId: z.number(),
     questionText: z.string().min(1),
-    languageLevel: z.number().min(0).max(3),
+    languageLevel: z.number().min(0).max(5),
     pointAmount: z.number().min(0).max(10),
     rightAnswer: z.string().min(1),
     wrongAnswers: z.array(z.string()),
@@ -46,10 +46,10 @@ export const adminRouter = router({
   }),
 
   newQuestion: teacherProcedure.input(z.object({
-    questionText: z.string().min(1),
+    questionText: z.string(),
     languageLevel: z.number().min(0).max(3),
     pointAmount: z.number().min(0).max(10),
-    rightAnswer: z.string().min(1),
+    rightAnswer: z.string(),
     wrongAnswers: z.array(z.string()),
   })).mutation(async ({ ctx, input }) => {
     const question = await ctx.prisma.question.create({

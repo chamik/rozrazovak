@@ -76,21 +76,27 @@ const AdminQuestion: NextPageWithLayout = () => {
 
     const newQuestion = async () => {
         const question = await newQuestionMutation.mutateAsync({
-            questionText: "Text otázky",
+            questionText: "",
             languageLevel: 0,
             pointAmount: 1,
-            rightAnswer: "ahoj",
-            wrongAnswers: ["ne", "ne", "ne"],
+            rightAnswer: "",
+            wrongAnswers: ["", "", ""],
         });
 
         setQuestion(question);
         router.push(`/admin/grammar?id=${question.id}`)
     }
 
-    if (!questions ) return (
-        <>
-            call to action
-        </>
+    if (!questions || questions.length == 0) return (
+        <div className="w-full flex flex-col">
+            <p className="text-center text-lg">V databázi zatím nejsou žádné otázky</p>
+            <button className="mx-auto ml-auto my-3 bg-purple-800 shadow-sm font-extrabold py-2 px-5 rounded-3xl text-slate-200 hover:ring-2" onClick={() => {
+                newQuestion();
+                utils.admin.getAllQuestions.invalidate();
+            }}>
+                Vytvořit novou otázku
+            </button>
+        </div>
     )
 
     return (
@@ -121,7 +127,7 @@ const AdminQuestion: NextPageWithLayout = () => {
                         Vytvořit otázku
                     </button>
                     <div className="flex justify-start px-8 py-2 bg-purple-200 rounded-3xl text-purple-800 mb-6 text-left font-semibold">
-                        <p className="w-10 mr-4">ID</p>
+                        {/* <p className="w-10 mr-4">ID</p> */}
                         <p className="w-80 mr-4">Otázka</p>
                         <p className="w-80 mr-4">Správná odpověď</p>
                         <p className="w-10 mr-4">Úroveň</p>
@@ -157,7 +163,7 @@ const QuestionsListing: React.FC<QuestionsListingProps> = (props) => {
             {questions.map(question => (
                 <Link href={`/admin/grammar/?id=${question.id}`} key={question.id} onClick={() => getQuestionDataCallback(question.id)}>
                     <div className="flex justify-start px-8 py-2 mb-2 text-left text-slate-700 hover:ring-2 ring-purple-600 rounded-3xl hover:cursor-pointer font-semibold">
-                        <p className="w-10 mr-4">{question.id}</p>
+                        {/* <p className="w-10 mr-4">{question.id}</p> */}
                         <p className="w-80 mr-4 truncate">{question.questionText}</p>
                         <p className="w-80 mr-4 truncate">{question.rightAnswer}</p>
                         <p className="w-10 mr-4">{numToLevel(question.languageLevel)}</p>
