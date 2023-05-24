@@ -13,6 +13,8 @@ type GrammarEditStateBinding = {
     setQuestionRightAnswer: Dispatch<SetStateAction<string>>,
     questionWrongAnswers: string[],
     setQuestionWrongAnswers: Dispatch<SetStateAction<string[]>>,
+    deleteQuestion: () => void,
+    goBack: () => void,
 }
 
 type GrammarEditProps = {
@@ -31,6 +33,8 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
         setQuestionRightAnswer,
         questionWrongAnswers,
         setQuestionWrongAnswers,
+        deleteQuestion,
+        goBack
     } = props.binding;
 
     const setWrongAnswer = (i: number, x: string) => {
@@ -43,9 +47,14 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
     const isAnswerEmpty = (i: number) => questionWrongAnswers[i]!.length == 0;
 
     return (
+        <div className="flex flex-col w-full">
+        <div>
+            <img src='/svg/arrow-left-solid.svg' alt='aye' className="w-10" onClick={goBack}/>
+        </div>
         <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
             <div className="flex flex-row mb-6">
                 <p className="mx-auto text-xl font-bold">Gramatická otázka ID {questionId}</p>
+                <img src='/svg/trash-solid.svg' alt='aye' className="rounded-full w-5 opacity-50 hover:ring-4 ring-red-600" onClick={deleteQuestion}/>
             </div>
             <div className="flex flex-col mb-6">
                 <p className="ml-3 mb-1">Otázka</p>
@@ -109,6 +118,7 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
                     
                 </RadioGroup>
             </div>
+        </div>
         </div>
     );
 }

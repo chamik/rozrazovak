@@ -32,6 +32,7 @@ const AdminQuestion: NextPageWithLayout = () => {
     const questionsData = trpc.admin.getAllQuestions.useQuery();
     const questionQuery = trpc.admin.getQuestionById.useMutation();
     const newQuestionMutation = trpc.admin.newQuestion.useMutation();
+    const deleteQuestionMutation = trpc.admin.deleteQuestion.useMutation();
     const questions = questionsData.data?.questions.sort((a, b) => a.id - b.id);
     const utils = trpc.useContext();
 
@@ -42,7 +43,8 @@ const AdminQuestion: NextPageWithLayout = () => {
     const [questionText, setQuestionText] = useState("")
     const [questionLevel, setQuestionLevel] = useState(0)
     const [questionRightAnswer, setQuestionRightAnswer] = useState("")
-    const [questionWrongAnswers, setQuestionWrongAnswers] = useState([""]);
+    const [questionWrongAnswers, setQuestionWrongAnswers] = useState(["", "", ""]);
+    const goBack = () => router.push("/admin/grammar");
 
     const getQuestionData = async (id: number) => {
         const question = await questionQuery.mutateAsync({questionId: id})
@@ -87,12 +89,21 @@ const AdminQuestion: NextPageWithLayout = () => {
         router.push(`/admin/grammar?id=${question.id}`)
     }
 
+    const deleteQuestion = async () => {
+        await deleteQuestionMutation.mutateAsync({
+            id: questionId
+        });
+
+        await utils.admin.getAllQuestions.invalidate();
+        router.push('/admin/grammar');
+    }
+
     if (!questions || questions.length == 0) return (
         <div className="w-full flex flex-col">
             <p className="text-center text-lg">V databázi zatím nejsou žádné otázky</p>
-            <button className="mx-auto ml-auto my-3 bg-purple-800 shadow-sm font-extrabold py-2 px-5 rounded-3xl text-slate-200 hover:ring-2" onClick={() => {
-                newQuestion();
-                utils.admin.getAllQuestions.invalidate();
+            <button className="mx-auto ml-auto my-3 bg-purple-800 shadow-sm font-extrabold py-2 px-5 rounded-3xl text-slate-200 hover:ring-2" onClick={async () => {
+                await newQuestion();
+                await utils.admin.getAllQuestions.invalidate();
             }}>
                 Vytvořit novou otázku
             </button>
@@ -103,9 +114,13 @@ const AdminQuestion: NextPageWithLayout = () => {
         <>
             <main className="flex-col w-full">
                 {params.has("id") && <Modal onClose={async () => {
-                    await saveQuestion();
-                    router.push('/admin/grammar');
-                    utils.admin.getAllQuestions.invalidate();
+                    // When saving fails (for example user submitted a form with empty question text) we don't want
+                    // to leave the modal, so we just `catch` the error and act like nothing happened
+                    try {
+                        await saveQuestion();
+                        router.push('/admin/grammar');
+                        utils.admin.getAllQuestions.invalidate();
+                    } catch { }
                     }}>
                     <GrammarEdit binding={{
                         questionId,
@@ -118,22 +133,25 @@ const AdminQuestion: NextPageWithLayout = () => {
                         setQuestionRightAnswer,
                         questionWrongAnswers,
                         setQuestionWrongAnswers,
+                        deleteQuestion,
+                        goBack,
                     }}/>
                 </Modal>}
                 <div className="flex flex-col w-full m-6 rounded-3xl mx-auto -mt-5">
-                    <button className="ml-auto my-3 mx-0 bg-purple-800 shadow-sm font-extrabold py-2 px-5 rounded-3xl text-slate-200 hover:ring-2" onClick={() => {
-                        newQuestion();
+                    <button className="ml-auto my-3 mx-0 bg-purple-800 shadow-sm font-extrabold py-2 px-5 rounded-3xl text-slate-200 hover:ring-2" onClick={async () => {
+                        await newQuestion();
                     }}>
                         Vytvořit otázku
                     </button>
                     <div className="flex justify-start px-8 py-2 bg-purple-200 rounded-3xl text-purple-800 mb-6 text-left font-semibold">
                         {/* <p className="w-10 mr-4">ID</p> */}
-                        <p className="w-80 mr-4">Otázka</p>
+                        <p className="w-96 mr-4">Otázka</p>
                         <p className="w-80 mr-4">Správná odpověď</p>
-                        <p className="w-10 mr-4">Úroveň</p>
+                        <p className="w-40 mr-4">Úroveň</p>
+                        <p className="w-10 mr-4">ID</p>
                     </div>
                     <QuestionsListing questions={questions} getQuestionDataCallback={(id) => getQuestionData(id)}/>
-                    <button className="mt-4 mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5" onClick={() => newQuestion()}>
+                    <button className="mt-4 mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5" onClick={async () => await newQuestion()}>
                         Vytvořit novou otázku
                     </button>
                 </div>
@@ -162,11 +180,12 @@ const QuestionsListing: React.FC<QuestionsListingProps> = (props) => {
         <>
             {questions.map(question => (
                 <Link href={`/admin/grammar/?id=${question.id}`} key={question.id} onClick={() => getQuestionDataCallback(question.id)}>
-                    <div className="flex justify-start px-8 py-2 mb-2 text-left text-slate-700 hover:ring-2 ring-purple-600 rounded-3xl hover:cursor-pointer font-semibold">
+                    <div className="flex justify-start px-8 py-2 mb-2 text-left text-slate-700 hover:ring-2 ring-purple-600 rounded-3xl hover:cursor-pointer font-extrabold">
                         {/* <p className="w-10 mr-4">{question.id}</p> */}
-                        <p className="w-80 mr-4 truncate">{question.questionText}</p>
+                        <p className="w-96 mr-4 truncate">{question.questionText}</p>
                         <p className="w-80 mr-4 truncate">{question.rightAnswer}</p>
-                        <p className="w-10 mr-4">{numToLevel(question.languageLevel)}</p>
+                        <p className="w-40 mr-4">{numToLevel(question.languageLevel)}</p>
+                        <p className="w-10 mr-4 text-slate-400">{question.id}</p>
                     </div>
                 </Link>
             ))}
