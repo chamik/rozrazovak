@@ -52,11 +52,12 @@ const AdminQuestion: NextPageWithLayout = () => {
     const setTest = (test: Test) => {
         setTestId(test.id);
         setTestTime(test.timeLimit);
-        //TODO: A1 and C2
+        setGrammarA1Amount(test.grammarA1Amount);
         setGrammarA2Amount(test.grammarA2Amount);
         setGrammarB1Amount(test.grammarB1Amount);
         setGrammarB2Amount(test.grammarB2Amount);
         setGrammarC1Amount(test.grammarC1Amount);
+        setGrammarC2Amount(test.grammarC2Amount);
     }
 
     const saveMutation = trpc.admin.saveTest.useMutation();
@@ -64,10 +65,12 @@ const AdminQuestion: NextPageWithLayout = () => {
         await saveMutation.mutateAsync({
             id: testId,
             timeLimit: testTime,
+            grammarA1Amount: grammarA1Amount,
             grammarA2Amount: grammarA2Amount,
             grammarB1Amount: grammarB1Amount,
             grammarB2Amount: grammarB2Amount,
             grammarC1Amount: grammarC1Amount,
+            grammarC2Amount: grammarC2Amount,
         });
     }
 
@@ -90,7 +93,24 @@ const AdminQuestion: NextPageWithLayout = () => {
                 {params.has("id") && <Modal onClose={async () => {
                         goBack();
                     }}>
-                    xd
+                    <TestEdit binding={{
+                        testId,
+                        setTestId,
+                        testTime,
+                        setTestTime,
+                        grammarA1Amount,
+                        setGrammarA1Amount,
+                        grammarA2Amount,
+                        setGrammarA2Amount,
+                        grammarB1Amount,
+                        setGrammarB1Amount,
+                        grammarB2Amount,
+                        setGrammarB2Amount,
+                        grammarC1Amount,
+                        setGrammarC1Amount,
+                        grammarC2Amount,
+                        setGrammarC2Amount,
+                    }} />
                 </Modal>}
                 <TestsListing tests={tests} getTestDataCallback={(id) => getTestData(id)} />
             </main>
@@ -148,6 +168,9 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                         <Link href={`/admin/tests/?id=${test.id}`} key={test.id} onClick={() => getTestDataCallback(test.id)} className="mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5">
                             Nastavení
                         </Link>
+                        
+                        { // TODO: make this button do something
+                        }
                         <button className="major-button">
                             {test.started ? "ZASTAVIT" : "SPUSTIT"}
                         </button>

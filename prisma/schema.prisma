@@ -86,14 +86,16 @@ enum QuestionType {
 model Test {
   id          Int @id @default(autoincrement())
   class       Int @unique // There can only be one test for each class at a time
-  timeLimit   Int // in minutes
-  started     Boolean
+  timeLimit   Int @default(0) // in minutes
+  started     Boolean @default(false)
 
   // amount of questions for the grammar part
-  grammarA2Amount Int
-  grammarB1Amount Int
-  grammarB2Amount Int
-  grammarC1Amount Int
+  grammarA1Amount Int @default(0)
+  grammarA2Amount Int @default(0)
+  grammarB1Amount Int @default(0)
+  grammarB2Amount Int @default(0)
+  grammarC1Amount Int @default(0)
+  grammarC2Amount Int @default(0)
 
   TestSession     TestSession[]
 }

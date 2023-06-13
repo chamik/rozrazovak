@@ -1,30 +1,57 @@
 import { Test } from "@prisma/client"
-import { useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 import { AppRouter } from "../../server/trpc/router/_app";
 import { toRoman } from "../../utils/functions";
 import { AppRouterTypes, trpc } from "../../utils/trpc";
 
+type TestEditStateBinding = {
+    testId: number,
+    setTestId: Dispatch<SetStateAction<number>>,
+    testTime: number,
+    setTestTime: Dispatch<SetStateAction<number>>,
+    grammarA1Amount: number,
+    setGrammarA1Amount: Dispatch<SetStateAction<number>>,
+    grammarA2Amount: number,
+    setGrammarA2Amount: Dispatch<SetStateAction<number>>,
+    grammarB1Amount: number,
+    setGrammarB1Amount: Dispatch<SetStateAction<number>>,
+    grammarB2Amount: number,
+    setGrammarB2Amount: Dispatch<SetStateAction<number>>,
+    grammarC1Amount: number,
+    setGrammarC1Amount: Dispatch<SetStateAction<number>>,
+    grammarC2Amount: number,
+    setGrammarC2Amount: Dispatch<SetStateAction<number>>,
+}
+
 export type TestEditProps = {
-    test: Test
+    binding: TestEditStateBinding,
 };
 
 
 export const TestEdit: React.FC<TestEditProps> = props => {
     const {
-        test,
-    } = props;
+        testId,
+        setTestId,
+        testTime,
+        setTestTime,
+        grammarA1Amount,
+        setGrammarA1Amount,
+        grammarA2Amount,
+        setGrammarA2Amount,
+        grammarB1Amount,
+        setGrammarB1Amount,
+        grammarB2Amount,
+        setGrammarB2Amount,
+        grammarC1Amount,
+        setGrammarC1Amount,
+        grammarC2Amount,
+        setGrammarC2Amount,
+    } = props.binding;
 
+    // TODO: no UI here :(
     return (
         <div className="flex flex-col w-full">
-        <div>
-            <img src='/svg/arrow-left-solid.svg' alt='aye' className="w-10"/>
-        </div>
-        <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
-            <div className="flex flex-row mb-6">
-                <p className="mx-auto text-xl font-bold">Test pro ročník {toRoman(3)}</p>
-                <img src='/svg/trash-solid.svg' alt='aye' className="rounded-full w-5 opacity-50 hover:ring-4 ring-red-600"/>
-            </div>
-        </div>
+            {testId}
         </div>
     );
 }

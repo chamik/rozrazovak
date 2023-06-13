@@ -95,10 +95,12 @@ export const adminRouter = router({
   saveTest: teacherProcedure.input(z.object({
     id: z.number(),
     timeLimit: z.number().min(1),
+    grammarA1Amount: z.number().min(0),
     grammarA2Amount: z.number().min(0),
     grammarB1Amount: z.number().min(0),
     grammarB2Amount: z.number().min(0),
     grammarC1Amount: z.number().min(0),
+    grammarC2Amount: z.number().min(0),
   })).mutation(async ({ ctx, input }) => {
     await prisma.test.update({
       where: {

@@ -1,6 +1,7 @@
 import { Test, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import test from "node:test";
 import { toRoman } from "../utils/functions";
 import { trpc } from "../utils/trpc";
 
@@ -58,12 +59,13 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
             </div>
         );
 
+    //TODO: make that data actually accurate xd
     return (
         <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
             <div className="flex flex-col w-full h-full gap-6">
                 <div className="flex flex-row">
                     <img src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
-                    <p className="text-xl mx-6 my-auto"><span className="font-bold">45</span> minut</p>
+                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{activeTest.timeLimit}</span> minut</p>
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
