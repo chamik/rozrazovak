@@ -14,77 +14,17 @@ export const TestEdit: React.FC<TestEditProps> = props => {
         test,
     } = props;
 
-    const utils = trpc.useContext();
-
-    const saveMutation = trpc.admin.saveTest.useMutation();
-    const deleteMutation = trpc.admin.deleteTest.useMutation({
-        onSuccess() {
-            utils.admin.getAllTests.invalidate();
-        }
-    });
-    const startTestMutation = trpc.admin.startTest.useMutation({
-        onSuccess() {
-            utils.admin.getAllTests.invalidate();
-        }
-    });
-
-    const testTimeRef = useRef<HTMLInputElement | null>(null);
-    const testGrammarA2AmountRef = useRef<HTMLInputElement | null>(null);
-    const testGrammarB1AmountRef = useRef<HTMLInputElement | null>(null);
-    const testGrammarB2AmountRef = useRef<HTMLInputElement | null>(null);
-    const testGrammarC1AmountRef = useRef<HTMLInputElement | null>(null);
-
-    const saveTest = () => {
-        saveMutation.mutate({
-            id: test.id,
-            timeLimit: parseInt(testTimeRef.current!.value),
-            grammarA2Amount: parseInt(testGrammarA2AmountRef.current!.value),
-            grammarB1Amount: parseInt(testGrammarB1AmountRef.current!.value),
-            grammarB2Amount: parseInt(testGrammarB2AmountRef.current!.value),
-            grammarC1Amount: parseInt(testGrammarC1AmountRef.current!.value),
-        });
-    }
-
-    const deleteTest = () => {
-        deleteMutation.mutate({testId: test.id});
-    }
-
-    const startTest = () => {
-        startTestMutation.mutate({testId: test.id});
-    }
-
     return (
-        <div className="flex flex-col w-full mx-auto rounded-md py-8 pl-8 pr-16 bg-slate-300 shadow-md mb-8">
-            <div className="flex flex-row justify-between">
-                <h3 className="text-xl font-bold">Test pro třídu {toRoman(test.class)}.</h3>
-                <button type="button" disabled={test.started} onClick={() => startTest()}>
-                    spustit
-                </button>
+        <div className="flex flex-col w-full">
+        <div>
+            <img src='/svg/arrow-left-solid.svg' alt='aye' className="w-10"/>
+        </div>
+        <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
+            <div className="flex flex-row mb-6">
+                <p className="mx-auto text-xl font-bold">Test pro ročník {toRoman(3)}</p>
+                <img src='/svg/trash-solid.svg' alt='aye' className="rounded-full w-5 opacity-50 hover:ring-4 ring-red-600"/>
             </div>
-            <div className="flex flex-col">
-                <label className="rounded-xl text-lg font-bold my-auto">Čas pro testovaného</label>
-                <div>    
-                    <input type="number" disabled={test.started} ref={testTimeRef} name="pointAmount" className="p-3 rounded-xl mt-2 question-input" defaultValue={test.timeLimit}/>
-                </div>
-                <label className="rounded-xl text-lg font-bold my-auto mt-10">Počet otázek různých obtížností</label>
-                <div className="flex flex-row">
-                    <label className="rounded-xl text-lg font-bold my-auto mr-4">A2</label>
-                    <input type="number" disabled={test.started} ref={testGrammarA2AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarA2Amount}/>
-
-                    <label className="rounded-xl text-lg font-bold my-auto mr-4">B1</label>
-                    <input type="number" disabled={test.started} ref={testGrammarB1AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarB1Amount}/>
-
-                    <label className="rounded-xl text-lg font-bold my-auto mr-4">B2</label>
-                    <input type="number" disabled={test.started} ref={testGrammarB2AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarB2Amount}/>
-
-                    <label className="rounded-xl text-lg font-bold my-auto mr-4">C1</label>
-                    <input type="number" disabled={test.started} ref={testGrammarC1AmountRef} name="pointAmount" className="p-3 w-32 rounded-xl mt-2 mr-5 question-input" defaultValue={test.grammarC1Amount}/>
-                </div>
-                <div>
-                    <button disabled={test.started} className="p-3 rounded-xl w-full mt-10 question-input hover:bg-green-500" onClick={() => saveTest()}>uložit</button>
-                    <button disabled={test.started} className="p-3 rounded-xl w-full mt-2 question-input hover:bg-red-600" onClick={() => deleteTest()}>smazat</button>
-                </div>
-            </div>
+        </div>
         </div>
     );
 }

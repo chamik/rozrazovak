@@ -44,7 +44,16 @@ const AdminQuestion: NextPageWithLayout = () => {
     const [questionLevel, setQuestionLevel] = useState(0)
     const [questionRightAnswer, setQuestionRightAnswer] = useState("")
     const [questionWrongAnswers, setQuestionWrongAnswers] = useState(["", "", ""]);
-    const goBack = () => router.push("/admin/grammar");
+
+    const goBack = async () => {
+        // When saving fails (for example user submitted a form with empty question text) we don't want
+        // to leave the modal, so we just `catch` the error and act like nothing happened
+        try {
+            await saveQuestion();
+            router.push('/admin/grammar');
+            utils.admin.getAllQuestions.invalidate();
+        } catch { }
+    } 
 
     const getQuestionData = async (id: number) => {
         const question = await questionQuery.mutateAsync({questionId: id})
@@ -114,13 +123,7 @@ const AdminQuestion: NextPageWithLayout = () => {
         <>
             <main className="flex-col w-full">
                 {params.has("id") && <Modal onClose={async () => {
-                    // When saving fails (for example user submitted a form with empty question text) we don't want
-                    // to leave the modal, so we just `catch` the error and act like nothing happened
-                    try {
-                        await saveQuestion();
-                        router.push('/admin/grammar');
-                        utils.admin.getAllQuestions.invalidate();
-                    } catch { }
+                        goBack()
                     }}>
                     <GrammarEdit binding={{
                         questionId,

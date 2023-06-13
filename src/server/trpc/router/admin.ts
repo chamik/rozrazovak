@@ -23,6 +23,17 @@ export const adminRouter = router({
     return question;
   }),
 
+  /** This is not a mutation really, just an ugly way to trick trpc */
+  getTestById: teacherProcedure.input(z.object({ testId: z.number() })).mutation(async ({ ctx, input }) => {
+    const test = await prisma.test.findFirst({
+      where: {
+        id: input.testId
+      }
+    });
+
+    return test;
+  }),
+
   saveQuestion: teacherProcedure.input(z.object({
     questionId: z.number(),
     questionText: z.string().min(1),
