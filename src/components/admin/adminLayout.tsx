@@ -30,13 +30,13 @@ export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
     // TODO: userouter to color the currently used tab
     return (
         <div className="flex flex-col purple-gradient min-h-screen">
-            <nav className="border-b-2 mb-10 flex flex-row justify-around w-full h-24 bg-purple-100 rounded-b-3xl">
+            <nav className="border-2 mb-10 mt-6 flex flex-row justify-around w-[70rem] mx-auto h-24 bg-purple-100 rounded-3xl">
                 <div className="flex flex-row h-full p-2 gap-10 ml-10">
                     {ADMIN_TABS.map(route => (
                         <Link
                             key={route.route}
                             href={route.route}
-                            className={`text-lg my-auto font-bold border-purple-700 ${pathname == route.route ? "font-black border-b-2 text-purple-900" : ""}`}
+                            className={`text-xl my-auto font-extrabold border-4 rounded-xl px-2 py-1 border-purple-200 ${pathname == route.route ? "font-black  border-purple-800" : ""}`}
                         >
                             {route.name}
                         </Link>

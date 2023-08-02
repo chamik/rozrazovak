@@ -48,9 +48,6 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
 
     return (
         <div className="flex flex-col w-full">
-        <div>
-            <img src='/svg/arrow-left-solid.svg' alt='aye' className="w-10" onClick={goBack}/>
-        </div>
         <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
             <div className="flex flex-row mb-6">
                 <p className="mx-auto text-xl font-bold">Gramatická otázka ID {questionId}</p>
@@ -118,6 +115,10 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
                     
                 </RadioGroup>
             </div>
+            <button className="rounded-xl bg-green-400 p-4 mt-7"
+                    onClick={goBack}>
+                <p className="font-bold text-lg">Uložit</p>
+            </button>
         </div>
         </div>
     );
