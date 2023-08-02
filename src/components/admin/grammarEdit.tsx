@@ -46,6 +46,7 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
     const isEmpty = (t: string) => t.length == 0;
     const isAnswerEmpty = (i: number) => questionWrongAnswers[i]!.length == 0;
 
+    // budiž toto důkazem že bůh je mrtev
     return (
         <div className="flex flex-col w-full">
         <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
@@ -74,17 +75,26 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
                     {isAnswerEmpty(0) &&
                     <p className="ml-3 mt-1 text-red-600">Špatná odpověď nesmí být prázdná</p>
                     }
+                    {(questionWrongAnswers[0] == questionRightAnswer && !isAnswerEmpty(0)) &&
+                    <p className="ml-3 mt-1 text-red-600">Špatná odpověď nesmí být stejná jako správná odpověď</p>
+                    }
                 </div>
                 <div className="mb-4 w-full">
                     <input className={`rounded-3xl text-xl px-3 py-2 w-full ${isAnswerEmpty(0) && "ring-2 ring-red-600"}`} type="text" placeholder="Text špatné odpovědi 2" value={questionWrongAnswers[1]} onChange={e => setWrongAnswer(1, e.target.value)}/>
                     {isAnswerEmpty(1) &&
                     <p className="ml-3 mt-1 text-red-600">Špatná odpověď nesmí být prázdná</p>
                     }
+                    {(questionWrongAnswers[1] == questionRightAnswer && !isAnswerEmpty(1)) &&
+                    <p className="ml-3 mt-1 text-red-600">Špatná odpověď nesmí být stejná jako správná odpověď</p>
+                    }
                 </div>
                 <div className="mb-4 w-full">
                     <input className={`rounded-3xl text-xl px-3 py-2 w-full ${isAnswerEmpty(0) && "ring-2 ring-red-600"}`} type="text" placeholder="Text špatné odpovědi 3" value={questionWrongAnswers[2]} onChange={e => setWrongAnswer(2, e.target.value)}/>
                     {isAnswerEmpty(2) &&
                     <p className="ml-3 mt-1 text-red-600">Špatná odpověď nesmí být prázdná</p>
+                    }
+                    {(questionWrongAnswers[2] == questionRightAnswer && !isAnswerEmpty(2)) &&
+                    <p className="ml-3 mt-1 text-red-600">Špatná odpověď nesmí být stejná jako správná odpověď</p>
                     }
                 </div>
             </div>
