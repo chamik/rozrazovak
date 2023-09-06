@@ -76,6 +76,18 @@ export const adminRouter = router({
     return question;
   }),
 
+  getQuestionLevels: teacherProcedure.query(async ({ ctx }) => {
+    const questions = await ctx.prisma.question.findMany();
+    return [
+      questions.filter(x => x.languageLevel == 0).length,
+      questions.filter(x => x.languageLevel == 1).length,
+      questions.filter(x => x.languageLevel == 2).length,
+      questions.filter(x => x.languageLevel == 3).length,
+      questions.filter(x => x.languageLevel == 4).length,
+      questions.filter(x => x.languageLevel == 5).length,
+    ];
+  }),
+
   deleteQuestion: teacherProcedure.input(z.object({ id: z.number() })).mutation(async ({ ctx, input }) => {
     await prisma.question.delete({
       where: {
@@ -120,13 +132,14 @@ export const adminRouter = router({
     })
   }),
 
-  startTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+  toggleTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+    const test = await prisma.test.findFirst({ where: { id: input.testId }});
     await prisma.test.update({
       where: {
         id: input.testId
       },
       data: {
-        started: true,
+        started: !test?.started,
       }
     })
   }),

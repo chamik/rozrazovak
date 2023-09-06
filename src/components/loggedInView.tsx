@@ -8,6 +8,8 @@ import { trpc } from "../utils/trpc";
 export const LoggedInView: React.FC = () => {
     const { data: session } = useSession()
     const year = new Date().getFullYear();
+
+    // TODO: refresh every n seconds
     const userData = trpc.auth.getUserData.useQuery();
 
     if (!userData.data) return (
@@ -59,6 +61,9 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
             </div>
         );
 
+    const amount = activeTest?.grammarA1Amount + activeTest?.grammarA2Amount + activeTest?.grammarB1Amount + activeTest?.grammarB2Amount + activeTest?.grammarC1Amount + activeTest?.grammarC2Amount;
+    const diff = getDifficulties(activeTest);
+
     //TODO: make that data actually accurate xd
     return (
         <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
@@ -69,11 +74,11 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
-                    <p className="text-xl mx-6 my-auto"><span className="font-bold">56</span> gramatických otázek</p>
+                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{amount}</span> gramatických otázek</p>
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/bolt-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
-                    <p className="text-xl mx-6 my-auto">obtížnost <span className="font-bold">B1</span> až <span className="font-bold">C1</span></p>
+                    <p className="text-xl mx-6 my-auto">obtížnost <span className="font-bold">{diff[0]}</span> {diff[0] != diff[1] && (<>až <span className="font-bold">{diff[1]}</span></>)}</p>
                 </div>
             </div>
 
@@ -82,6 +87,21 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
             </button>
         </div>
     );
+}
+
+// God is dead
+const getDifficulties = (test: Test): [string, string] => {
+    const diff = [test.grammarA1Amount, test.grammarA2Amount, test.grammarB1Amount, test.grammarB2Amount, test.grammarC1Amount, test.grammarC2Amount];
+    const text = ["A1", "A2", "B1", "B2", "C1", "C2"];
+
+    const easiest = diff.findIndex(d => d != 0);
+    const hardest = diff.findLastIndex(d => d != 0);
+
+    if (easiest == -1 && hardest == -1)
+        return ["není", "není"];
+
+    //@ts-ignore
+    return [text[easiest], text[hardest]];
 }
 
 const TeacherView: React.FC = () => {

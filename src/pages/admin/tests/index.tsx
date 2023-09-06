@@ -17,7 +17,11 @@ import { useSearchParams } from "next/navigation";
 const AdminQuestion: NextPageWithLayout = () => {
     const testsData = trpc.admin.getAllTests.useQuery();
     const testQuery = trpc.admin.getTestById.useMutation();
+    const availQuery = trpc.admin.getQuestionLevels.useQuery();
+    const testStartMut = trpc.admin.toggleTest.useMutation();
+
     const tests = testsData.data?.tests.sort((a, b) => a.class - b.class);
+    const avail = availQuery.data!;
 
     const utils = trpc.useContext();
     const router = useRouter();
@@ -31,6 +35,7 @@ const AdminQuestion: NextPageWithLayout = () => {
     const [grammarB2Amount, setGrammarB2Amount] = useState(0);
     const [grammarC1Amount, setGrammarC1Amount] = useState(0);
     const [grammarC2Amount, setGrammarC2Amount] = useState(0);
+    const [availableQuestions, setAvailableQuestions] = useState([0, 0, 0, 0, 0, 0]);
 
     const goBack = async () => {
         try {
@@ -43,10 +48,11 @@ const AdminQuestion: NextPageWithLayout = () => {
     const getTestData = async (id: number) => {
         const test = await testQuery.mutateAsync({testId: id});
 
-        if (!test)
+        if (!test || !avail || avail.length < 6)
             return;
 
         setTest(test);
+        setAvailableQuestions(avail);
     }
 
     const setTest = (test: Test) => {
@@ -59,6 +65,13 @@ const AdminQuestion: NextPageWithLayout = () => {
         setGrammarC1Amount(test.grammarC1Amount);
         setGrammarC2Amount(test.grammarC2Amount);
     }
+
+    const toggleTest = async (testId: number) => {
+        await testStartMut.mutateAsync({
+            testId,
+        });
+        utils.admin.getAllTests.invalidate();
+    };
 
     const saveMutation = trpc.admin.saveTest.useMutation();
     const saveTest = async () => {
@@ -89,7 +102,7 @@ const AdminQuestion: NextPageWithLayout = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className="flex min-h-screen flex-col w-full p-16">
+            <main className="flex min-h-screen flex-col w-full">
                 {params.has("id") && <Modal onClose={async () => {
                         goBack();
                     }}>
@@ -110,9 +123,11 @@ const AdminQuestion: NextPageWithLayout = () => {
                         setGrammarC1Amount,
                         grammarC2Amount,
                         setGrammarC2Amount,
+                        availableQuestions,
+                        goBack,
                     }} />
                 </Modal>}
-                <TestsListing tests={tests} getTestDataCallback={(id) => getTestData(id)} />
+                <TestsListing tests={tests} getTestDataCallback={(id) => getTestData(id)} toggleTest={toggleTest} />
             </main>
         </>
     );
@@ -121,12 +136,14 @@ const AdminQuestion: NextPageWithLayout = () => {
 type TestsListingProps = {
     tests: Test[] | undefined
     getTestDataCallback: (id: number) => void,
+    toggleTest: (testId:number) => void,
 };
 
 const TestsListing: React.FC<TestsListingProps> = (props) => {
     const {
         tests,
         getTestDataCallback,
+        toggleTest,
     } = props;
 
     if (!tests) return (
@@ -152,26 +169,32 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                         <h3 className="font-semibold text-slate-500 mt-1 mb-2 text-center">Gramatika</h3>
                         <div className="flex flex-row">
                             <div className="flex flex-col my-auto text-xl text-slate-500 mr-7">
-                                <p>A1 <span className="ml-2 font-bold text-slate-700">0</span></p>
+                                <p>A1 <span className="ml-2 font-bold text-slate-700">{test.grammarA1Amount}</span></p>
                                 <p>B1 <span className="ml-2 font-bold text-slate-700">{test.grammarB1Amount}</span></p>
                                 <p>C1 <span className="ml-2 font-bold text-slate-700">{test.grammarC1Amount}</span></p>
                             </div>
                             <div className="flex flex-col my-auto text-xl text-slate-500">
                                 <p>A2 <span className="ml-2 font-bold text-slate-700">{test.grammarA2Amount}</span></p>
                                 <p>B2 <span className="ml-2 font-bold text-slate-700">{test.grammarB2Amount}</span></p>
-                                <p>C2 <span className="ml-2 font-bold text-slate-700">0</span></p>
+                                <p>C2 <span className="ml-2 font-bold text-slate-700">{test.grammarC2Amount}</span></p>
                             </div>
                         </div>
                         
                     </div>
+                    <div className="ml-10 flex flex-col bg-purple-100 p-4">
+                        <h3 className="font-semibold text-slate-500 mt-1 mb-2 text-center">Čas testu</h3>
+                        <div className="flex flex-col text-xl text-slate-500">
+                            <p><span className="ml-2 font-bold text-slate-700">{test.timeLimit}</span> min.</p>
+                        </div>
+                    </div>
                     <div className="flex flex-col justify-evenly ml-auto mr-4">
-                        <Link href={`/admin/tests/?id=${test.id}`} key={test.id} onClick={() => getTestDataCallback(test.id)} className="mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5">
-                            Nastavení
-                        </Link>
+                        {!test.started && (
+                            <Link href={`/admin/tests/?id=${test.id}`} key={test.id} onClick={() => getTestDataCallback(test.id)} className="mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5">
+                                Nastavení
+                            </Link>
+                        )}
                         
-                        { // TODO: make this button do something
-                        }
-                        <button className="major-button">
+                        <button className="major-button" onClick={async () => await toggleTest(test.id)}>
                             {test.started ? "ZASTAVIT" : "SPUSTIT"}
                         </button>
                     </div>
