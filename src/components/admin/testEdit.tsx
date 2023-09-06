@@ -1,7 +1,7 @@
 import { Test } from "@prisma/client"
 import { Dispatch, SetStateAction, useRef } from "react";
 import { AppRouter } from "../../server/trpc/router/_app";
-import { toRoman } from "../../utils/functions";
+import { minuta, otazka, toRoman } from "../../utils/functions";
 import { AppRouterTypes, trpc } from "../../utils/trpc";
 
 type TestEditStateBinding = {
@@ -53,15 +53,6 @@ export const TestEdit: React.FC<TestEditProps> = props => {
     } = props.binding;
 
     const questionSum = () => grammarA1Amount + grammarA2Amount + grammarB1Amount + grammarB2Amount + grammarC1Amount + grammarC2Amount;
-    const otazka = (n: number) => {
-        if (n == 1) return "gramatickou otázku"
-        else if (n > 1 && n < 5) return "gramatické otázky"
-        else return "gramatických otázek";
-    }
-    const minuta = (n: number) => {
-        if (n < 5) return "minuty"
-        else return "minut";
-    }
 
     const avgTime = () => {
         if (questionSum() == 0) return 0;

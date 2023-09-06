@@ -2,7 +2,7 @@ import { Test, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import test from "node:test";
-import { toRoman } from "../utils/functions";
+import { minuta, otazka, toRoman } from "../utils/functions";
 import { trpc } from "../utils/trpc";
 
 export const LoggedInView: React.FC = () => {
@@ -70,11 +70,11 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
             <div className="flex flex-col w-full h-full gap-6">
                 <div className="flex flex-row">
                     <img src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
-                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{activeTest.timeLimit}</span> minut</p>
+                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{activeTest.timeLimit}</span> {minuta(activeTest.timeLimit)}</p>
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
-                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{amount}</span> gramatických otázek</p>
+                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{amount}</span> {otazka(amount)}</p>
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/bolt-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>

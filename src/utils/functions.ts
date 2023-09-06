@@ -24,3 +24,15 @@ export const languageLevels = [
     { id:4, name: "C1" },
     { id:5, name: "C2" },
 ]
+
+export const otazka = (n: number) => {
+    if (n == 1) return "gramatickou otázku"
+    else if (n > 1 && n < 5) return "gramatické otázky"
+    else return "gramatických otázek";
+}
+
+export const minuta = (n: number) => {
+    if (n == 1) return "minuta";
+    if (n < 5) return "minuty"
+    else return "minut";
+}
