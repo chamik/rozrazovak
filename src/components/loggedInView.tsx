@@ -1,16 +1,19 @@
-import { Test, User } from "@prisma/client";
+import { Test, TestSession, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import test from "node:test";
 import { minuta, otazka, toRoman } from "../utils/functions";
 import { trpc } from "../utils/trpc";
+import { useRouter } from "next/router";
 
 export const LoggedInView: React.FC = () => {
     const { data: session } = useSession()
     const year = new Date().getFullYear();
+    const router = useRouter();
 
     // TODO: refresh every n seconds
-    const userData = trpc.auth.getUserData.useQuery();
+    const userData = trpc.user.getUserData.useQuery();
+    const beginTestMut = trpc.user.beginTest.useMutation();
 
     if (!userData.data) return (
         <></>
@@ -18,8 +21,15 @@ export const LoggedInView: React.FC = () => {
 
     const {
         user,
-        activeTest
+        test,
+        testSession,
     } = userData?.data;
+
+    const beginTest = async () => {
+        if (!testSession)
+            await beginTestMut.mutateAsync();
+        router.push('/test');
+    };
 
     return (
         <div className="bg-slate-50 rounded-xl flex flex-row w-[60rem] justify-between p-10 m-auto shadow">
@@ -36,7 +46,7 @@ export const LoggedInView: React.FC = () => {
                 {user.isTeacher ? (
                     <TeacherView />
                 ) : (
-                    <StudentView user={user} activeTest={activeTest}/>
+                    <StudentView user={user} test={test} session={testSession} beginTest={beginTest}/>
                 )}
             </div>
         </div>
@@ -45,32 +55,48 @@ export const LoggedInView: React.FC = () => {
 
 type StudentViewProps = {
     user: User,
-    activeTest: Test | null,
+    test: Test | null,
+    session: TestSession | null,
+    beginTest: () => Promise<void>,
 };
 
 const StudentView: React.FC<StudentViewProps> = (props) => {
     const {
         user,
-        activeTest,
+        test,
+        session,
+        beginTest,
     } = props;
 
-    if (!activeTest || !activeTest.started)
+    const calcRemainingTime = (startingTime: Date, durationMinutes: number): number => {
+        const currentTime = new Date();
+        const elapsedTimeMillis = currentTime.getTime() - startingTime.getTime();
+        const elapsedTimeMinutes = elapsedTimeMillis / (1000 * 60);
+        const remainingTimeMinutes = durationMinutes - elapsedTimeMinutes;
+        return Math.max(0, remainingTimeMinutes);
+    }
+
+    if (!test || !test.started)
         return (
             <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
                 <p className="text-xl mx-6 my-auto text-center font-bold">Aktuálně pro tebe není zadaný žádný test.</p>
             </div>
         );
 
-    const amount = activeTest?.grammarA1Amount + activeTest?.grammarA2Amount + activeTest?.grammarB1Amount + activeTest?.grammarB2Amount + activeTest?.grammarC1Amount + activeTest?.grammarC2Amount;
-    const diff = getDifficulties(activeTest);
+    const amount = test?.grammarA1Amount + test?.grammarA2Amount + test?.grammarB1Amount + test?.grammarB2Amount + test?.grammarC1Amount + test?.grammarC2Amount;
+    const diff = getDifficulties(test);
 
-    //TODO: make that data actually accurate xd
+    let remainingTime = "";
+    if (session) {
+        remainingTime = calcRemainingTime(session.startTime, test.timeLimit).toFixed(0);
+    }
+
     return (
         <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
             <div className="flex flex-col w-full h-full gap-6">
                 <div className="flex flex-row">
                     <img src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
-                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{activeTest.timeLimit}</span> {minuta(activeTest.timeLimit)}</p>
+                    <p className="text-xl mx-6 my-auto"><span className="font-bold">{test.timeLimit}</span> {minuta(test.timeLimit)}</p>
                 </div>
                 <div className="flex flex-row">
                     <img src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
@@ -82,9 +108,19 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
                 </div>
             </div>
 
-            <button className="major-button mt-6 mx-auto">
-                Začít test
-            </button>
+            {!session ? (
+                <button className="major-button mt-6 mx-auto" onClick={async () => await beginTest()}>
+                    Začít test
+                </button>
+            ) : (
+                <>
+                    <button className="major-button mt-6 mx-auto" onClick={async () => await beginTest()}>
+                        Pokračovat
+                    </button>
+                    <p className="mx-auto mt-2 -mb-4">Zbývá ti <b>{remainingTime}</b> minut</p>
+                </>
+            )}
+            
         </div>
     );
 }

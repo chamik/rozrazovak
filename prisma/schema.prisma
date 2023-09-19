@@ -50,8 +50,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  testSessionId Int?
-  testSession   TestSession? @relation(fields: [testSessionId], references: [id])
+  testSession   TestSession?
 
   classYear     Int     @default(0)
   isTeacher     Boolean @default(false)
@@ -73,8 +72,6 @@ model Question {
   wrongAnswers  String[]      @default(["", "", ""])
   questionType  QuestionType  @default(GRAMMAR)
   pointAmount   Int           @default(1)
-
-  grammarSessions TestSession[] @relation("GrammarQuestions")
 }
 
 enum QuestionType {
@@ -107,6 +104,8 @@ model TestSession {
   testId    Int
   Test      Test     @relation(fields: [testId], references: [id])
 
-  grammarQuestions Question[] @relation("GrammarQuestions")
-  User             User[]
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+
+  grammarQuestionsIds Int[]
 }
