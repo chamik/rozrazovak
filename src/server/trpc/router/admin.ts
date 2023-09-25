@@ -143,4 +143,10 @@ export const adminRouter = router({
       }
     })
   }),
+
+  areTestsRunning: teacherProcedure.query(async () => {
+    return (await prisma.test.findMany({
+      where: { started: true }
+    })).length != 0;
+  })
 });

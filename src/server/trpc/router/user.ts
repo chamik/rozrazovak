@@ -88,6 +88,8 @@ export const userRouter = router({
     if (!user)
       return;
 
+    // TODO: check if answering in correct timeframe
+
     const oldAnswer = await prisma.answer.findFirst({
       where: {
         questionId: input.questionId,

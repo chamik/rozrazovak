@@ -36,6 +36,9 @@ const AdminQuestion: NextPageWithLayout = () => {
     const questions = questionsData.data?.questions.sort((a, b) => a.id - b.id);
     const utils = trpc.useContext();
 
+    const areTestsRunning = trpc.admin.areTestsRunning.useQuery();
+    const runningTests = areTestsRunning.data;
+
     const router = useRouter();
     const params = useSearchParams();
 
@@ -106,6 +109,12 @@ const AdminQuestion: NextPageWithLayout = () => {
         await utils.admin.getAllQuestions.invalidate();
         router.push('/admin/grammar');
     }
+
+    if (runningTests) return (
+        <div className="w-full flex flex-col">
+            <p className="text-center text-lg font-bold">Během testování nelze upravovat otázky. Zkontrolujte, zdali nějaký neběží.</p>
+        </div>
+    )
 
     if (!questions || questions.length == 0) return (
         <div className="w-full flex flex-col">

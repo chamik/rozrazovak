@@ -72,6 +72,7 @@ const AdminQuestion: NextPageWithLayout = () => {
         });
         utils.admin.getAllTests.invalidate();
         utils.user.getUserData.invalidate();
+        utils.admin.areTestsRunning.invalidate();
     };
 
     const saveMutation = trpc.admin.saveTest.useMutation();
