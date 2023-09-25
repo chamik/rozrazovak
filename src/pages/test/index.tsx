@@ -1,6 +1,7 @@
 import { RadioGroup } from "@headlessui/react";
 import { intersperse } from "../../utils/functions";
 import React, { Fragment, useState } from "react";
+import { trpc } from "../../utils/trpc";
 
 
 export const TestView: React.FC = () => {
@@ -17,7 +18,7 @@ export const TestView: React.FC = () => {
             answers: ["Good.", "No.", "Enough.", "Important."],
         },
         {
-            id: 666,
+            id: 7,
             questionText: "Testuju co se stane když to přeteče Testuju co se stane když to přetečeTestuju co se stane když to přetečeTestuju co se stane když to přetečeTestuju co se stane když to přeteče",
             answers: ["A co tohle A co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohle", "No.", "Enough.", "Important."],
         },
@@ -43,6 +44,15 @@ export const TestView: React.FC = () => {
         },
     ]
 
+    const submitAnswerMutation = trpc.user.submitAnswer.useMutation();
+
+    const submitAnswer = async (id :number, answer: string) => {
+        await submitAnswerMutation.mutateAsync({
+            questionId: id,
+            answer: answer,
+        });
+    };
+
     // TODO: fix the gradient
     return (
         <main className="purple-gradient bg-fixed h-full bg-no-repeat">
@@ -50,7 +60,7 @@ export const TestView: React.FC = () => {
                 {questions.map(q => (
                     <div className="w-full bg-slate-50 p-4 mb-5 rounded-lg shadow-md" key={q.id}>
                         <QuestionText questionText={q.questionText} id={q.id}/>
-                        <Answers answers={q.answers} />
+                        <Answers questionId={q.id} answers={q.answers} submitAnswer={submitAnswer} />
                     </div>
                 ))}
             </div>
@@ -59,12 +69,16 @@ export const TestView: React.FC = () => {
 }
 
 type AnswersProps = {
+    questionId: number,
     answers: string[],
+    submitAnswer: (id :number, answer: string) => Promise<void>,
 }
 
 const Answers: React.FC<AnswersProps> = (props) => {
     const {
+        questionId,
         answers,
+        submitAnswer,
     } = props;
 
     const [selected, setSelected] = useState<string | null>(null);
@@ -74,7 +88,9 @@ const Answers: React.FC<AnswersProps> = (props) => {
             {answers.map(a => (
                 <RadioGroup.Option key={a} value={a} as={Fragment}>
                     {({ active, checked }) => (
-                        <div className={`bg-slate-100 rounded-lg py-2 px-3 my-2 ${ checked && '!bg-purple-200 font-semibold'}`}>
+                        <div className={`bg-slate-100 rounded-lg py-2 px-3 my-2 ${ checked && '!bg-purple-200 font-semibold'}`}
+                            onClick={async () => await submitAnswer(questionId, a)}
+                        >
                             {a}
                         </div>
                     )}

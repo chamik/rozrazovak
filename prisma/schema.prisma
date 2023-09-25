@@ -49,6 +49,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  answers       Answer[]
 
   testSession   TestSession?
 
@@ -72,6 +73,8 @@ model Question {
   wrongAnswers  String[]      @default(["", "", ""])
   questionType  QuestionType  @default(GRAMMAR)
   pointAmount   Int           @default(1)
+
+  answers       Answer[]
 }
 
 enum QuestionType {
@@ -108,4 +111,17 @@ model TestSession {
   user      User     @relation(fields: [userId], references: [id])
 
   grammarQuestionsIds Int[]
+}
+
+model Answer {
+  id          Int     @id @default(autoincrement())
+  answerTime  DateTime
+
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
+
+  questionId  Int
+  question    Question  @relation(fields: [questionId], references: [id])
+
+  answer      String
 }

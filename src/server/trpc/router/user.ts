@@ -1,6 +1,7 @@
 import { protectedProcedure, router } from "../trpc";
 import { prisma } from "../../../server/db/client";
-import { Question } from "@prisma/client";
+import { Prisma, Question } from "@prisma/client";
+import { z } from "zod";
 
 const shuffleAndTake = (ids: number[], n: number): number[] => {
   const shuffled = ids.sort(() => 0.5 - Math.random());
@@ -72,5 +73,56 @@ export const userRouter = router({
         testId: test.id,
       }
     })
+  }),
+
+  submitAnswer: protectedProcedure.input(z.object({
+    questionId: z.number(),
+    answer: z.string(),
+  })).mutation(async ({ ctx, input }) => {
+    // rename GrammarAnswer to Answer??
+    // add an entry to the GrammarAnswer table (change if already present)
+    const user = await prisma.user.findFirst({ 
+      where: { email: ctx.session.user.email },
+    });
+
+    if (!user)
+      return;
+
+    const oldAnswer = await prisma.answer.findFirst({
+      where: {
+        questionId: input.questionId,
+        userId: user.id,
+      },
+      select: {
+        id: true,
+        answer: true
+      },
+    })
+
+    if (!oldAnswer) {
+      await prisma.answer.create({
+        data: {
+          questionId: input.questionId,
+          userId: user.id,
+          answer: input.answer,
+          answerTime: new Date(),
+        }
+      })
+    }
+    else {
+      if (oldAnswer.answer == input.answer) { return; }
+
+      await prisma.answer.update({
+        where: { id: oldAnswer.id },
+        data: {
+          answer: input.answer,
+          answerTime: new Date(),
+        }
+      })
+    }
+
+    // on client a function that takes and ID and answer, passed to each child element on the test page
   })
+
+  // TODO: submit test endpoint that calculates results and saves them to the test session. Session is then marked as closed. Results are displayed on the loggedInView page
 });
