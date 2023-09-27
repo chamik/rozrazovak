@@ -8,6 +8,15 @@ const shuffleAndTake = (ids: number[], n: number): number[] => {
   return shuffled.slice(0, n);
 }
 
+const shuffle = <T>(a: T[]): T[] => {
+  const shuffled = a.sort(() => 0.5 - Math.random());
+  return shuffled;
+}
+
+
+// TODO: for some reason this cache is not persistent
+const questionCache = new Map<number, {id: number, questionText: string, answers: string[]}[]>();
+
 export const userRouter = router({
   getUserData: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findFirst({ where: { email: ctx.session.user.email } });
@@ -73,6 +82,56 @@ export const userRouter = router({
         testId: test.id,
       }
     })
+  }),
+
+  getQuestions: protectedProcedure.query(async ({ ctx }) => {
+    const user = await prisma.user.findFirst({ 
+      where: { email: ctx.session.user.email },
+    });
+
+    if (!user)
+      return;
+
+    const sesh = await prisma.testSession.findFirst({
+        where: {
+          userId: user.id,
+        }
+    });
+
+    if (!sesh)
+      return;
+
+      console.info(questionCache.size)
+    if (questionCache.has(sesh.id)) {
+      console.info("reading from cache")
+      return questionCache.get(sesh.id);
+    }
+
+    const questionsIds = sesh.grammarQuestionsIds;
+    const questions = await prisma.question.findMany({
+      where: {
+        id: { in: questionsIds }
+      },
+      select: {
+        id: true,
+        questionText: true,
+        rightAnswer: true,
+        wrongAnswers: true,
+      },
+    });
+
+    const shuffled = shuffle(questions.map(x => ({
+      id: x.id,
+      questionText: x.questionText,
+      answers: shuffle([x.rightAnswer, ...x.wrongAnswers]),
+    })));
+
+    // TODO: this code is executed more than once per session, wtf
+    questionCache.set(sesh.id, shuffled);
+    console.info("caching");
+    console.info({questionCache});
+
+    return shuffled;
   }),
 
   submitAnswer: protectedProcedure.input(z.object({

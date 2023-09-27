@@ -5,46 +5,16 @@ import { trpc } from "../../utils/trpc";
 
 
 export const TestView: React.FC = () => {
-
-    const questions = [
-        {
-            id: 1,
-            questionText: "I should get _ now.",
-            answers: ["away", "out", "going", "in"],
-        },
-        {
-            id: 2,
-            questionText: "How are you?",
-            answers: ["Good.", "No.", "Enough.", "Important."],
-        },
-        {
-            id: 7,
-            questionText: "Testuju co se stane když to přeteče Testuju co se stane když to přetečeTestuju co se stane když to přetečeTestuju co se stane když to přetečeTestuju co se stane když to přeteče",
-            answers: ["A co tohle A co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohleA co tohle", "No.", "Enough.", "Important."],
-        },
-        {
-            id: 3,
-            questionText: "How are you?",
-            answers: ["Good.", "No.", "Enough.", "Important."],
-        },
-        {
-            id: 4,
-            questionText: "How are you?",
-            answers: ["Good.", "No.", "Enough.", "Important."],
-        },
-        {
-            id: 5,
-            questionText: "How are you?",
-            answers: ["Good.", "No.", "Enough.", "Important."],
-        },
-        {
-            id: 6,
-            questionText: "How are you?",
-            answers: ["Good.", "No.", "Enough.", "Important."],
-        },
-    ]
-
     const submitAnswerMutation = trpc.user.submitAnswer.useMutation();
+    const getQuestionQuery = trpc.user.getQuestions.useQuery();
+
+    const questions = getQuestionQuery.data;
+
+    if (!questions) return (
+        <>
+            something's happening...
+        </>
+    )
 
     const submitAnswer = async (id :number, answer: string) => {
         await submitAnswerMutation.mutateAsync({

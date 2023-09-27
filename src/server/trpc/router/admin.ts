@@ -132,8 +132,19 @@ export const adminRouter = router({
     })
   }),
 
+  // TODO: instead of a bool have an ENUM(READY, RUNNING, IDLE) where IDLE has saved data and READY is blank
+  // TODO: delete question cache?
   toggleTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
     const test = await prisma.test.findFirst({ where: { id: input.testId }});
+
+    if (test?.started) {
+      await prisma.testSession.deleteMany({
+        where: {
+          testId: input.testId,
+        }
+      });
+    }
+
     await prisma.test.update({
       where: {
         id: input.testId
