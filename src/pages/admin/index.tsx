@@ -5,6 +5,7 @@ import { AdminLayout } from "../../components/admin/adminLayout";
 import { NextPageWithLayout } from "../_app";
 import { getServerAuthSession } from "../../server/common/get-server-auth-session";
 import { trpc } from "../../utils/trpc";
+import { TestStatus } from "@prisma/client";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -27,7 +28,7 @@ const AdminHome: NextPageWithLayout = () => {
     const testsData = trpc.admin.getAllTests.useQuery();
     const tests = testsData.data?.tests;
 
-    const testAmount = tests?.filter(x => x.started).length || 0;
+    const testAmount = tests?.filter(x => x.status == TestStatus.ACTIVE).length || 0;
 
     return (
         <>

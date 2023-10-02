@@ -15,6 +15,7 @@ const shuffle = <T>(a: T[]): T[] => {
 
 
 // TODO: for some reason this cache is not persistent
+// maybe just cache this on the client?
 const questionCache = new Map<number, {id: number, questionText: string, answers: string[]}[]>();
 
 export const userRouter = router({
