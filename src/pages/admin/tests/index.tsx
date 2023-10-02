@@ -6,7 +6,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { NextPageWithLayout } from "../../_app";
 import { AdminLayout } from "../../../components/admin/adminLayout";
 import { TestEdit } from "../../../components/admin/testEdit";
-import { Test } from "@prisma/client";
+import { Test, TestStatus } from "@prisma/client";
 import { trpc } from "../../../utils/trpc";
 import { toRoman } from "../../../utils/functions";
 import { useState } from "react";
@@ -19,6 +19,7 @@ const AdminQuestion: NextPageWithLayout = () => {
     const testQuery = trpc.admin.getTestById.useMutation();
     const availQuery = trpc.admin.getQuestionLevels.useQuery();
     const testStartMut = trpc.admin.toggleTest.useMutation();
+    const restartTestMut = trpc.admin.restartTest.useMutation();
 
     const tests = testsData.data?.tests.sort((a, b) => a.class - b.class);
     const avail = availQuery.data!;
@@ -53,6 +54,14 @@ const AdminQuestion: NextPageWithLayout = () => {
 
         setTest(test);
         setAvailableQuestions(avail);
+    }
+
+    const restartTest = async (testId: number) => {
+        await restartTestMut.mutateAsync({
+            testId,
+        });
+        utils.admin.getAllTests.invalidate();
+        utils.user.getUserData.invalidate();
     }
 
     const setTest = (test: Test) => {
@@ -129,7 +138,7 @@ const AdminQuestion: NextPageWithLayout = () => {
                         goBack,
                     }} />
                 </Modal>}
-                <TestsListing tests={tests} getTestDataCallback={(id) => getTestData(id)} toggleTest={toggleTest} />
+                <TestsListing tests={tests} getTestDataCallback={(id) => getTestData(id)} toggleTest={toggleTest} restartTest={restartTest} />
             </main>
         </>
     );
@@ -139,6 +148,7 @@ type TestsListingProps = {
     tests: Test[] | undefined
     getTestDataCallback: (id: number) => void,
     toggleTest: (testId:number) => void,
+    restartTest: (testId:number) => void,
 };
 
 const TestsListing: React.FC<TestsListingProps> = (props) => {
@@ -146,6 +156,7 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
         tests,
         getTestDataCallback,
         toggleTest,
+        restartTest
     } = props;
 
     if (!tests) return (
@@ -163,9 +174,7 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                         <h2 className="font-semibold text-3xl">{toRoman(test.class)}. ročník</h2>
                         <div className="mt-8 text-slate-500">
                             <p>Status:</p>
-                            <p className={`text-2xl font-bold ${test.started ? "text-green-600" : "text-red-600"}`}>
-                                {test.started ? "AKTIVNÍ" : "VYPNUTÝ"}
-                            </p>
+                            <TestBadge status={test.status}/>
                         </div>
                     </div>
                     <div className="ml-10 flex flex-col bg-purple-100 p-4">
@@ -190,21 +199,60 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                             <p><span className="ml-2 font-bold text-slate-700">{test.timeLimit}</span> min.</p>
                         </div>
                     </div>
-                    <div className="flex flex-col justify-evenly ml-auto mr-4">
-                        {!test.started && (
+                    <div className="flex flex-col justify-evenly ml-auto mr-4 w-60">
+                        {test.status == TestStatus.IDLE && (
                             <Link href={`/admin/tests/?id=${test.id}`} key={test.id} onClick={() => getTestDataCallback(test.id)} className="mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5">
                                 Nastavení
                             </Link>
                         )}
+
+                        {test.status == TestStatus.PENDING && (
+                            <>
+                                <button className="major-button" onClick={async () => await toggleTest(test.id)}>
+                                    SPUSTIT
+                                </button>
+                                <button className="major-button text-red-700" onClick={async () => await restartTest(test.id)}>
+                                    RESTARTOVAT
+                                </button>
+                            </>
+                        )}
                         
-                        <button className="major-button" onClick={async () => await toggleTest(test.id)}>
-                            {test.started ? "ZASTAVIT" : "SPUSTIT"}
-                        </button>
+                        {(test.status == TestStatus.ACTIVE || test.status == TestStatus.IDLE) && (
+                            <button className="major-button" onClick={async () => await toggleTest(test.id)}>
+                                {test.status == TestStatus.ACTIVE ? "ZASTAVIT" : "SPUSTIT"}
+                            </button>
+                        )}
                     </div>
                 </div>
             ))}
         </div>
     );
+}
+
+type TestBadgeProps = {
+    status: TestStatus,
+}
+
+const TestBadge: React.FC<TestBadgeProps> = (props) => {
+    const {
+        status,
+    } = props;
+
+    if (status == TestStatus.ACTIVE) return (
+        <p className="text-2xl font-bold text-green-600">
+            AKTIVNÍ
+        </p>
+    )
+    else if (status == TestStatus.IDLE) return (
+        <p className="text-2xl font-bold text-red-600">
+            VYPNUTÝ
+        </p>
+    )
+    else return (
+        <p className="text-2xl font-bold text-yellow-500">
+            VYPLNĚNÝ
+        </p>
+    )
 }
 
 AdminQuestion.Layout = AdminLayout;

@@ -1,6 +1,6 @@
 import { protectedProcedure, router } from "../trpc";
 import { prisma } from "../../../server/db/client";
-import { Prisma, Question } from "@prisma/client";
+import { Prisma, Question, TestStatus } from "@prisma/client";
 import { z } from "zod";
 
 const shuffleAndTake = (ids: number[], n: number): number[] => {
@@ -23,7 +23,12 @@ export const userRouter = router({
     const test = await prisma.test.findFirst({
       where: {
         AND: [
-          { started: true },
+          {
+            OR: [
+              { status: TestStatus.ACTIVE },
+              { status: TestStatus.PENDING },
+            ]
+          },
           { class: user?.classYear },
         ],
       }
@@ -49,7 +54,7 @@ export const userRouter = router({
     const test = await prisma.test.findFirst({
       where: {
         AND: [
-          { started: true },
+          { status: TestStatus.ACTIVE },
           { class: user?.classYear },
         ],
       }
@@ -101,7 +106,7 @@ export const userRouter = router({
     if (!sesh)
       return;
 
-      console.info(questionCache.size)
+    console.info(questionCache.size)
     if (questionCache.has(sesh.id)) {
       console.info("reading from cache")
       return questionCache.get(sesh.id);

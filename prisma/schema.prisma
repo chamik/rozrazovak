@@ -42,19 +42,19 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String?      @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   answers       Answer[]
 
-  testSession   TestSession?
+  testSession TestSession?
 
-  classYear     Int     @default(0)
-  isTeacher     Boolean @default(false)
+  classYear Int     @default(0)
+  isTeacher Boolean @default(false)
 }
 
 model VerificationToken {
@@ -66,15 +66,15 @@ model VerificationToken {
 }
 
 model Question {
-  id            Int           @id @default(autoincrement())
-  languageLevel Int           @default(0)
-  questionText  String        @default("")
-  rightAnswer   String        @default("")
-  wrongAnswers  String[]      @default(["", "", ""])
-  questionType  QuestionType  @default(GRAMMAR)
-  pointAmount   Int           @default(1)
+  id            Int          @id @default(autoincrement())
+  languageLevel Int          @default(0)
+  questionText  String       @default("")
+  rightAnswer   String       @default("")
+  wrongAnswers  String[]     @default(["", "", ""])
+  questionType  QuestionType @default(GRAMMAR)
+  pointAmount   Int          @default(1)
 
-  answers       Answer[]
+  answers Answer[]
 }
 
 enum QuestionType {
@@ -83,11 +83,21 @@ enum QuestionType {
   LISTENING
 }
 
+// IDLE -> ACTIVE -> PENDING -> IDLE -> ...
+// IDLE:    waiting to be started
+// ACTIVE:  being filled out
+// PENDING: waiting to be reset (data loss)
+enum TestStatus {
+  IDLE
+  ACTIVE
+  PENDING
+}
+
 model Test {
-  id          Int @id @default(autoincrement())
-  class       Int @unique // There can only be one test for each class at a time
-  timeLimit   Int @default(0) // in minutes
-  started     Boolean @default(false)
+  id        Int        @id @default(autoincrement())
+  class     Int        @unique // There can only be one test for each class at a time
+  timeLimit Int        @default(0) // in minutes
+  status    TestStatus @default(IDLE)
 
   // amount of questions for the grammar part
   grammarA1Amount Int @default(0)
@@ -97,31 +107,32 @@ model Test {
   grammarC1Amount Int @default(0)
   grammarC2Amount Int @default(0)
 
-  TestSession     TestSession[]
+  TestSession TestSession[]
 }
 
 model TestSession {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   startTime DateTime
+  status    TestStatus @default(IDLE)
 
-  testId    Int
-  Test      Test     @relation(fields: [testId], references: [id])
+  testId Int
+  Test   Test @relation(fields: [testId], references: [id])
 
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
   grammarQuestionsIds Int[]
 }
 
 model Answer {
-  id          Int     @id @default(autoincrement())
-  answerTime  DateTime
+  id         Int      @id @default(autoincrement())
+  answerTime DateTime
 
-  userId      String
-  user        User   @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  questionId  Int
-  question    Question  @relation(fields: [questionId], references: [id])
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
 
-  answer      String
+  answer String
 }

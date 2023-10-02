@@ -1,4 +1,4 @@
-import { Test, TestSession, User } from "@prisma/client";
+import { Test, TestSession, TestStatus, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import test from "node:test";
@@ -76,12 +76,18 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
         return Math.max(0, remainingTimeMinutes);
     }
 
-    if (!test || !test.started)
+    if (!test)
         return (
             <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
                 <p className="text-xl mx-6 my-auto text-center font-bold">Aktuálně pro tebe není zadaný žádný test.</p>
             </div>
         );
+
+    if (test.status == TestStatus.PENDING) return(
+        <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
+            <p className="text-xl mx-6 my-auto text-center font-bold">Test je vyplněný!</p>
+        </div>
+    );
 
     const amount = test?.grammarA1Amount + test?.grammarA2Amount + test?.grammarB1Amount + test?.grammarB2Amount + test?.grammarC1Amount + test?.grammarC2Amount;
     const diff = getDifficulties(test);

@@ -25,14 +25,19 @@ export const TestView: React.FC = () => {
 
     // TODO: fix the gradient
     return (
-        <main className="purple-gradient bg-fixed h-full bg-no-repeat">
-            <div className="flex flex-col mx-auto h-screen p-7 max-w-5xl">
+        <main className="purple-gradient bg-fixed h-auto bg-no-repeat overflow-auto">
+            <div className="flex flex-col mx-auto h-auto p-7 max-w-5xl mb-5">
                 {questions.map(q => (
                     <div className="w-full bg-slate-50 p-4 mb-5 rounded-lg shadow-md" key={q.id}>
                         <QuestionText questionText={q.questionText} id={q.id}/>
                         <Answers questionId={q.id} answers={q.answers} submitAnswer={submitAnswer} />
                     </div>
                 ))}
+            </div>
+            <div className="flex flex-col mt-5 mb-20 mx-auto max-w-5xl">
+                <button className="major-button mx-auto">
+                    ODEVZDAT TEST
+                </button>
             </div>
         </main>
     );

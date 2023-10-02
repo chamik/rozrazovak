@@ -1,6 +1,7 @@
 import { router, publicProcedure, protectedProcedure, teacherProcedure } from "../trpc";
 import { prisma } from "../../../server/db/client";
 import { z } from "zod";
+import { TestStatus } from "@prisma/client";
 
 export const adminRouter = router({
   getAllQuestions: teacherProcedure.query(async ({ ctx }) => {
@@ -132,32 +133,58 @@ export const adminRouter = router({
     })
   }),
 
-  // TODO: instead of a bool have an ENUM(READY, RUNNING, IDLE) where IDLE has saved data and READY is blank
-  // TODO: delete question cache?
   toggleTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
     const test = await prisma.test.findFirst({ where: { id: input.testId }});
+    if (!test) return;
 
-    if (test?.started) {
-      await prisma.testSession.deleteMany({
+    if (test.status == TestStatus.ACTIVE) {
+      await prisma.test.update({
         where: {
-          testId: input.testId,
+          id: input.testId
+        },
+        data: {
+          status: TestStatus.PENDING,
+        }
+      });
+    } 
+    else {
+      await prisma.test.update({
+        where: {
+          id: input.testId
+        },
+        data: {
+          status: TestStatus.ACTIVE,
         }
       });
     }
+    
+  }),
+
+  restartTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+    const test = await prisma.test.findFirst({ where: { id: input.testId }});
+    if (!test) return;
+    
+    if (test.status != TestStatus.PENDING) return;
+
+    await prisma.testSession.deleteMany({
+      where: {
+        testId: input.testId,
+      }
+    });
 
     await prisma.test.update({
       where: {
         id: input.testId
       },
       data: {
-        started: !test?.started,
+        status: TestStatus.IDLE,
       }
     })
   }),
 
   areTestsRunning: teacherProcedure.query(async () => {
     return (await prisma.test.findMany({
-      where: { started: true }
+      where: { status: TestStatus.ACTIVE }
     })).length != 0;
   })
 });
