@@ -85,48 +85,6 @@ export const userRouter = router({
     })
   }),
 
-
-  //TODO: rework
-  // getQuestions: protectedProcedure.query(async ({ ctx }) => {
-  //   const user = await prisma.user.findFirst({ 
-  //     where: { email: ctx.session.user.email },
-  //   });
-
-  //   if (!user)
-  //     return;
-
-  //   const sesh = await prisma.testSession.findFirst({
-  //       where: {
-  //         userId: user.id,
-  //       }
-  //   });
-
-  //   if (!sesh)
-  //     return;
-
-  //   const questionsIds = sesh.grammarQuestionsIds;
-  //   const questions = await prisma.question.findMany({
-  //     where: {
-  //       id: { in: questionsIds }
-  //     },
-  //     select: {
-  //       id: true,
-  //       questionText: true,
-  //       rightAnswer: true,
-  //       wrongAnswers: true,
-  //     },
-  //   });
-
-  //   const shuffled = shuffle(questions.map(x => ({
-  //     id: x.id,
-  //     questionText: x.questionText,
-  //     answers: shuffle([x.rightAnswer, ...x.wrongAnswers]),
-  //   })));
-
-  //   return shuffled;
-  // }),
-
-  // using mutation to trick trpc (only making the request once, when I want)
   getTestData: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findFirst({ 
       where: { email: ctx.session.user.email },
@@ -176,11 +134,6 @@ export const userRouter = router({
       testSession: sesh,
       submittedAnswers: answers,
     });
-
-    // return:
-    // - shuffled questions (cached on client)
-    // - testSession details
-    // - already submitted answers
   }),
 
   submitAnswer: protectedProcedure.input(z.object({
@@ -236,7 +189,7 @@ export const userRouter = router({
     // on client a function that takes and ID and answer, passed to each child element on the test page
   }),
 
-  // TODO: submit test endpoint that calculates results and saves them to the test session. Session is then marked as closed. Results are displayed on the loggedInView page
+  // TODO: finish calculations
   submitTest: protectedProcedure.mutation(async ({ ctx }) => {
     const user = await prisma.user.findFirst({ 
       where: { email: ctx.session.user.email },
@@ -302,7 +255,5 @@ export const userRouter = router({
         status: TestStatus.PENDING,
       },
     });
-
-    // TODO: continue here...
   }),
 });

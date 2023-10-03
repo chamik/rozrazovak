@@ -9,12 +9,8 @@ import { TestStatus } from "@prisma/client";
 export const TestView: React.FC = () => {
     const submitAnswerMutation = trpc.user.submitAnswer.useMutation();
     const submitTestMutation = trpc.user.submitTest.useMutation();
-    // const getQuestionsQuery = trpc.user.getQuestions.useQuery();
     const getTestDataQuery = trpc.user.getTestData.useQuery();
     const router = useRouter();
-
-    // TODO: cache questions from server
-    // TODO: create an endpoint that gets your answers (if something happened and you left the page)
 
     const [questions, setQuestions] = useState<{
         id: number,
@@ -34,17 +30,6 @@ export const TestView: React.FC = () => {
         wrongAnswers: number[],
     } | undefined>(undefined);
 
-
-
-    // const getTestData = async () => {
-    //     const testData = await getTestDataQuery.mutateAsync();
-    //     if (!testData)
-    //         return;
-
-    //     setQuestions(testData.questions);
-    //     setTestSession(testData.testSession);
-    // }
-
     if (!questions || !testSession) {
         const testData = getTestDataQuery.data;
         if (!testData)
@@ -54,6 +39,7 @@ export const TestView: React.FC = () => {
                 </>
             );
 
+        // TODO: the filter here is kinda ugly
         const questions = testData.questions.map(q => ({
             id: q.id,
             questionText: q.questionText,
