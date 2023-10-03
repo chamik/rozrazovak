@@ -122,6 +122,10 @@ model TestSession {
   user   User   @relation(fields: [userId], references: [id])
 
   grammarQuestionsIds Int[]
+  Answer              Answer[]
+
+  correctAnswers Int[] @default([])
+  wrongAnswers   Int[] @default([])
 }
 
 model Answer {
@@ -130,6 +134,9 @@ model Answer {
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
+
+  testSessionId Int
+  testSession   TestSession @relation(fields: [testSessionId], references: [id], onDelete: Cascade)
 
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])

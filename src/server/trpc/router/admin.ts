@@ -133,6 +133,7 @@ export const adminRouter = router({
     })
   }),
 
+  // TODO: this doesn't really deal with the time. Maybe reset it when PENDING -> ACTIVE??
   toggleTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
     const test = await prisma.test.findFirst({ where: { id: input.testId }});
     if (!test) return;

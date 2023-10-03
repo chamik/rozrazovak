@@ -13,11 +13,6 @@ const shuffle = <T>(a: T[]): T[] => {
   return shuffled;
 }
 
-
-// TODO: for some reason this cache is not persistent
-// maybe just cache this on the client?
-const questionCache = new Map<number, {id: number, questionText: string, answers: string[]}[]>();
-
 export const userRouter = router({
   getUserData: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findFirst({ where: { email: ctx.session.user.email } });
@@ -90,7 +85,49 @@ export const userRouter = router({
     })
   }),
 
-  getQuestions: protectedProcedure.query(async ({ ctx }) => {
+
+  //TODO: rework
+  // getQuestions: protectedProcedure.query(async ({ ctx }) => {
+  //   const user = await prisma.user.findFirst({ 
+  //     where: { email: ctx.session.user.email },
+  //   });
+
+  //   if (!user)
+  //     return;
+
+  //   const sesh = await prisma.testSession.findFirst({
+  //       where: {
+  //         userId: user.id,
+  //       }
+  //   });
+
+  //   if (!sesh)
+  //     return;
+
+  //   const questionsIds = sesh.grammarQuestionsIds;
+  //   const questions = await prisma.question.findMany({
+  //     where: {
+  //       id: { in: questionsIds }
+  //     },
+  //     select: {
+  //       id: true,
+  //       questionText: true,
+  //       rightAnswer: true,
+  //       wrongAnswers: true,
+  //     },
+  //   });
+
+  //   const shuffled = shuffle(questions.map(x => ({
+  //     id: x.id,
+  //     questionText: x.questionText,
+  //     answers: shuffle([x.rightAnswer, ...x.wrongAnswers]),
+  //   })));
+
+  //   return shuffled;
+  // }),
+
+  // using mutation to trick trpc (only making the request once, when I want)
+  getTestData: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findFirst({ 
       where: { email: ctx.session.user.email },
     });
@@ -99,32 +136,24 @@ export const userRouter = router({
       return;
 
     const sesh = await prisma.testSession.findFirst({
-        where: {
-          userId: user.id,
-        }
-    });
+      where: { userId: user.id },
+    })
 
     if (!sesh)
       return;
 
-    console.info(questionCache.size)
-    if (questionCache.has(sesh.id)) {
-      console.info("reading from cache")
-      return questionCache.get(sesh.id);
-    }
-
     const questionsIds = sesh.grammarQuestionsIds;
     const questions = await prisma.question.findMany({
-      where: {
-        id: { in: questionsIds }
-      },
-      select: {
-        id: true,
-        questionText: true,
-        rightAnswer: true,
-        wrongAnswers: true,
-      },
-    });
+        where: {
+          id: { in: questionsIds }
+        },
+        select: {
+          id: true,
+          questionText: true,
+          rightAnswer: true,
+          wrongAnswers: true,
+        },
+      });
 
     const shuffled = shuffle(questions.map(x => ({
       id: x.id,
@@ -132,16 +161,31 @@ export const userRouter = router({
       answers: shuffle([x.rightAnswer, ...x.wrongAnswers]),
     })));
 
-    // TODO: this code is executed more than once per session, wtf
-    questionCache.set(sesh.id, shuffled);
-    console.info("caching");
-    console.info({questionCache});
+    const answers = await prisma.answer.findMany({
+      where: {
+        testSessionId: sesh.id,
+      },
+      select: {
+        questionId: true,
+        answer: true,
+      },
+    });
 
-    return shuffled;
+    return ({
+      questions: shuffled,
+      testSession: sesh,
+      submittedAnswers: answers,
+    });
+
+    // return:
+    // - shuffled questions (cached on client)
+    // - testSession details
+    // - already submitted answers
   }),
 
   submitAnswer: protectedProcedure.input(z.object({
     questionId: z.number(),
+    testSessionId: z.number(),
     answer: z.string(),
   })).mutation(async ({ ctx, input }) => {
     // rename GrammarAnswer to Answer??
@@ -171,6 +215,7 @@ export const userRouter = router({
         data: {
           questionId: input.questionId,
           userId: user.id,
+          testSessionId: input.testSessionId,
           answer: input.answer,
           answerTime: new Date(),
         }
@@ -189,7 +234,75 @@ export const userRouter = router({
     }
 
     // on client a function that takes and ID and answer, passed to each child element on the test page
-  })
+  }),
 
   // TODO: submit test endpoint that calculates results and saves them to the test session. Session is then marked as closed. Results are displayed on the loggedInView page
+  submitTest: protectedProcedure.mutation(async ({ ctx }) => {
+    const user = await prisma.user.findFirst({ 
+      where: { email: ctx.session.user.email },
+    });
+
+    if (!user)
+      return;
+
+    const sesh = await prisma.testSession.findFirst({
+        where: {
+          userId: user.id,
+        }
+    });
+
+    if (!sesh)
+      return;
+
+    const questions = await prisma.question.findMany({
+      where: {
+        id: { in: sesh.grammarQuestionsIds }
+      },
+      select: {
+        id: true,
+        rightAnswer: true,
+      }
+    });
+
+    if (!questions)
+      return;
+
+    const answers = await prisma.answer.findMany({
+      where: {
+        AND: [
+          {userId: user.id},
+          {testSessionId: sesh.id},
+        ]
+      },
+    });
+
+    if (!answers)
+      return;
+
+    let correct: number[] = [];
+    let wrong: number[] = [];
+    // TODO: ew, quadratic
+    answers.forEach(ans => {
+      const c = questions.filter(x => x.id == ans.questionId)[0]!;
+      if (ans.answer == c.rightAnswer) {
+        correct.push(c.id);
+      }
+      else {
+        wrong.push(c.id);
+      }
+    });
+
+    await prisma.testSession.update({
+      where: {
+        id: sesh.id,
+      },
+      data: {
+        correctAnswers: correct,
+        wrongAnswers: wrong,
+        status: TestStatus.PENDING,
+      },
+    });
+
+    // TODO: continue here...
+  }),
 });

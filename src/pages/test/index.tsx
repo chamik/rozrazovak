@@ -2,40 +2,103 @@ import { RadioGroup } from "@headlessui/react";
 import { intersperse } from "../../utils/functions";
 import React, { Fragment, useState } from "react";
 import { trpc } from "../../utils/trpc";
+import { useRouter } from "next/router";
+import { TestStatus } from "@prisma/client";
 
 
 export const TestView: React.FC = () => {
     const submitAnswerMutation = trpc.user.submitAnswer.useMutation();
-    const getQuestionQuery = trpc.user.getQuestions.useQuery();
+    const submitTestMutation = trpc.user.submitTest.useMutation();
+    // const getQuestionsQuery = trpc.user.getQuestions.useQuery();
+    const getTestDataQuery = trpc.user.getTestData.useQuery();
+    const router = useRouter();
 
-    const questions = getQuestionQuery.data;
+    // TODO: cache questions from server
+    // TODO: create an endpoint that gets your answers (if something happened and you left the page)
 
-    if (!questions) return (
-        <>
-            something's happening...
-        </>
-    )
+    const [questions, setQuestions] = useState<{
+        id: number,
+        questionText: string,
+        answers: string[],
+        selected: string | undefined,
+    }[] | undefined>(undefined);
 
-    const submitAnswer = async (id :number, answer: string) => {
+    const [testSession, setTestSession] = useState<{
+        id: number,
+        startTime: Date,
+        status: TestStatus,
+        testId: number,
+        userId: string,
+        grammarQuestionsIds: number[],
+        correctAnswers: number[],
+        wrongAnswers: number[],
+    } | undefined>(undefined);
+
+
+
+    // const getTestData = async () => {
+    //     const testData = await getTestDataQuery.mutateAsync();
+    //     if (!testData)
+    //         return;
+
+    //     setQuestions(testData.questions);
+    //     setTestSession(testData.testSession);
+    // }
+
+    if (!questions || !testSession) {
+        const testData = getTestDataQuery.data;
+        if (!testData)
+            return (
+                <>
+                    something's happening...
+                </>
+            );
+
+        const questions = testData.questions.map(q => ({
+            id: q.id,
+            questionText: q.questionText,
+            answers: q.answers,
+            selected: testData.submittedAnswers.filter(x => x.questionId == q.id)[0]?.answer,
+        }));
+
+        setQuestions(questions);
+        setTestSession(testData.testSession);
+
+        console.log({questions});
+        console.log({testSession});
+
+        return (
+            <>
+                something's happening...
+            </>
+        );
+    }
+
+    const submitAnswer = async (id :number, answer: string, sessionId: number) => {
         await submitAnswerMutation.mutateAsync({
             questionId: id,
             answer: answer,
+            testSessionId: sessionId,
         });
     };
 
-    // TODO: fix the gradient
+    const submitTest = async () => {
+        await submitTestMutation.mutateAsync();
+        router.push('/');
+    };
+
     return (
         <main className="purple-gradient bg-fixed h-auto bg-no-repeat overflow-auto">
             <div className="flex flex-col mx-auto h-auto p-7 max-w-5xl mb-5">
                 {questions.map(q => (
                     <div className="w-full bg-slate-50 p-4 mb-5 rounded-lg shadow-md" key={q.id}>
                         <QuestionText questionText={q.questionText} id={q.id}/>
-                        <Answers questionId={q.id} answers={q.answers} submitAnswer={submitAnswer} />
+                        <Answers questionId={q.id} selectedAns={q.selected} answers={q.answers} testSessionId={testSession?.id} submitAnswer={submitAnswer} />
                     </div>
                 ))}
             </div>
             <div className="flex flex-col mt-5 mb-20 mx-auto max-w-5xl">
-                <button className="major-button mx-auto">
+                <button className="major-button mx-auto" onClick={async () => await submitTest()}>
                     ODEVZDAT TEST
                 </button>
             </div>
@@ -46,17 +109,21 @@ export const TestView: React.FC = () => {
 type AnswersProps = {
     questionId: number,
     answers: string[],
-    submitAnswer: (id :number, answer: string) => Promise<void>,
+    testSessionId: number,
+    selectedAns: string | undefined,
+    submitAnswer: (id :number, answer: string, sessionId: number) => Promise<void>,
 }
 
 const Answers: React.FC<AnswersProps> = (props) => {
     const {
         questionId,
         answers,
+        testSessionId,
+        selectedAns,
         submitAnswer,
     } = props;
 
-    const [selected, setSelected] = useState<string | null>(null);
+    const [selected, setSelected] = useState<string | undefined>(selectedAns);
 
     return (
         <RadioGroup value={selected} onChange={setSelected}>
@@ -64,7 +131,7 @@ const Answers: React.FC<AnswersProps> = (props) => {
                 <RadioGroup.Option key={a} value={a} as={Fragment}>
                     {({ active, checked }) => (
                         <div className={`bg-slate-100 rounded-lg py-2 px-3 my-2 ${ checked && '!bg-purple-200 font-semibold'}`}
-                            onClick={async () => await submitAnswer(questionId, a)}
+                            onClick={async () => await submitAnswer(questionId, a, testSessionId)}
                         >
                             {a}
                         </div>
