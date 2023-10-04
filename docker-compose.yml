@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  app:
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app
+    ports:
+      - "127.0.0.1:3000:3000"
+    image: rozrazovak
+    env_file: .env
+  database:
+    image: "postgres"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # persist data even if container shuts down
+
+volumes:
+  postgres_data:
