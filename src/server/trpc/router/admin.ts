@@ -98,7 +98,27 @@ export const adminRouter = router({
   }),
 
   getAllTests: teacherProcedure.query(async ({ ctx }) => {
-    const tests = await prisma.test.findMany();
+    let tests = await prisma.test.findMany();
+
+    if (tests.length == 0) {
+      const t = [1, 2, 3, 4, 5, 6, 7, 8].map(c => ({
+        class: c,
+        timeLimit: 20,
+        status: TestStatus.IDLE,
+        grammarA1Amount: 0,
+        grammarA2Amount: 0,
+        grammarB1Amount: 0,
+        grammarB2Amount: 0,
+        grammarC1Amount: 0,
+        grammarC2Amount: 0,
+      }));
+
+      await prisma.test.createMany({
+        data: t,
+      });
+
+      tests = await prisma.test.findMany();
+    }
 
     return {
       tests: tests!,
