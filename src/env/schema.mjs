@@ -19,8 +19,7 @@ export const serverSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   TEACHER_EMAILS: z.preprocess(
-    //@ts-ignore xd
-    (str) => str.split(","),
+    (str) => typeof str === "string" ? str.split(",") : [],
     z.array(z.string())
   ),
 });
