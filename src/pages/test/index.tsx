@@ -74,7 +74,7 @@ export const TestView: React.FC = () => {
     };
 
     return (
-        <main className="purple-gradient bg-fixed h-auto bg-no-repeat overflow-auto">
+        <main className="purple-gradient bg-fixed h-auto min-h-screen bg-no-repeat overflow-auto">
             <div className="flex flex-col mx-auto h-auto p-7 max-w-5xl mb-5">
                 {questions.map(q => (
                     <div className="w-full bg-slate-50 p-4 mb-5 rounded-lg shadow-md" key={q.id}>

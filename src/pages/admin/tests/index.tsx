@@ -209,10 +209,10 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                         {test.status == TestStatus.PENDING && (
                             <>
                                 <button className="major-button text-yellow-500" onClick={async () => await toggleTest(test.id)}>
-                                    OBNOVIT
+                                    RESTARTOVAT
                                 </button>
                                 <button className="major-button text-red-700" onClick={async () => await restartTest(test.id)}>
-                                    RESTARTOVAT
+                                    SMAZAT VÝSL.
                                 </button>
                             </>
                         )}
