@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     working_dir: /app
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:9001:9001"
     image: rozrazovak
     env_file: .env
   database:
