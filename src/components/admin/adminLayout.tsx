@@ -43,7 +43,9 @@ export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
                     ))}
                 </div>
                 <div className="flex h-full ml-auto mr-20 p-2">
-                    <img className="rounded-full w-16 my-auto" src={user?.image!} alt="User profile picture" />
+                    {user?.image && (
+                        <img className="rounded-full w-16 my-auto" src={user.image} alt="User profile picture" />
+                    )}
                     <div className="p-3 my-auto mx-4">
                         <p className="font-extrabold text-lg">{user?.name}</p>
                         <button className="text-slate-500 hover:underline hover:font-semibold" onClick={() => signOut()}>

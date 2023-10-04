@@ -38,7 +38,7 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
     } = props.binding;
 
     const setWrongAnswer = (i: number, x: string) => {
-        let e = [...questionWrongAnswers];
+        const e = [...questionWrongAnswers];
         e[i] = x;
         setQuestionWrongAnswers(e);
     }

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, TestStatus } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -10,7 +10,7 @@ async function main() {
             data: {
                 class: i,
                 timeLimit: 20,
-                started: false,
+                status: TestStatus.IDLE,
                 grammarA1Amount: 0,
                 grammarA2Amount: 0,
                 grammarB1Amount: 0,

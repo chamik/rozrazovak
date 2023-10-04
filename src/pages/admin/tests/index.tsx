@@ -169,7 +169,7 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
     return (
         <div className="flex flex-col ">
             {tests.map(test => (
-                <div className="flex flex-row w-full border-2 border-purple-300 shadow h-40 rounded-md mb-10">
+                <div className="flex flex-row w-full border-2 border-purple-300 shadow h-40 rounded-md mb-10" key={test.id}>
                     <div className="flex flex-col bg-purple-200 p-4 w-48 rounded-r-md">
                         <h2 className="font-semibold text-3xl">{toRoman(test.class)}. ročník</h2>
                         <div className="mt-8 text-slate-500">

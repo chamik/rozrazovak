@@ -7,7 +7,7 @@ import { trpc } from "../utils/trpc";
 import { NextPage } from "next";
 import Head from "next/head";
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+export type NextPageWithLayout<P = unknown, IP = P> = NextPage<P, IP> & {
     // getLayout?: (page: ReactElement) => ReactNode,
     Layout?: typeof DefaultLayout,
 }
@@ -26,7 +26,6 @@ const DefaultLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
 
 const MyApp: AppType<{ session: Session | null }> = ({
     Component,
-    /* @ts-ignore */
     pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) => {
 

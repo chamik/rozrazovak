@@ -12,7 +12,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
         onClose
     } = props;
 
-    let overlayRef = useRef<HTMLElement>();
+    const overlayRef = useRef<HTMLElement>();
 
     return (
         <Dialog
@@ -22,12 +22,12 @@ export const Modal: React.FC<ModalProps> = (props) => {
             console.log({overlayRef});
             onClose(value);
           }}
-          //@ts-ignore
+          //@ts-expect-error xdd
           initialFocus={overlayRef}
           className="fixed inset-0 z-10 flex items-center justify-center"
         >
           <Dialog.Overlay
-          //@ts-ignore
+          //@ts-expect-error xdd
             ref={overlayRef}
             className="fixed inset-0 bg-gray-800/60"
           />

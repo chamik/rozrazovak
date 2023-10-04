@@ -35,7 +35,7 @@ export const TestView: React.FC = () => {
         if (!testData)
             return (
                 <>
-                    something's happening...
+                    somethings happening...
                 </>
             );
 
@@ -55,7 +55,7 @@ export const TestView: React.FC = () => {
 
         return (
             <>
-                something's happening...
+                somethings happening...
             </>
         );
     }

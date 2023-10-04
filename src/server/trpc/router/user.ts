@@ -232,8 +232,8 @@ export const userRouter = router({
     if (!answers)
       return;
 
-    let correct: number[] = [];
-    let wrong: number[] = [];
+    const correct: number[] = [];
+    const wrong: number[] = [];
     // TODO: ew, quadratic
     answers.forEach(ans => {
       const c = questions.filter(x => x.id == ans.questionId)[0]!;

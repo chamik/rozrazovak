@@ -142,7 +142,7 @@ const getDifficulties = (test: Test): [string, string] => {
     if (easiest == -1 && hardest == -1)
         return ["není", "není"];
 
-    //@ts-ignore
+    //@ts-expect-error This will always be defined
     return [text[easiest], text[hardest]];
 }
 

@@ -52,6 +52,6 @@ export function intersperse<T, E>(array: T[], separator: E): (T|E)[] {
     if (array.length === 0)
         return [];
 
-    //@ts-ignore
+    //@ts-expect-error xdd
     return array.slice(1).reduce((ans: Type[], element) => ans.concat([ separator, element ]), [ array[0] ]);
 }
