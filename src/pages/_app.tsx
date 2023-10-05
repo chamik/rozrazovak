@@ -30,13 +30,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }: AppPropsWithLayout) => {
 
     const Wrapper = Component.Layout ?? DefaultLayout;
-    const year = new Date().getFullYear();
 
     return (
         <SessionProvider session={session}>
             <Wrapper>
                 <Head>
-                    <title>Rozřazovák {year}</title>
+                    <title>Rozřazovák</title>
                     <meta name="description" content="Rozřazovací test pro GJP-ME" />
                     <link rel="icon" href="/favicon.ico" />
                 </Head>

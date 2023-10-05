@@ -107,12 +107,6 @@ const AdminQuestion: NextPageWithLayout = () => {
 
     return (
         <>
-            <Head>
-                <title>Rozřazovák | Admin panel</title>
-                <meta name="description" content="Admin panel" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
             <main className="flex min-h-screen flex-col w-full">
                 {params.has("id") && <Modal onClose={async () => {
                         goBack();

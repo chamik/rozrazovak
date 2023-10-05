@@ -32,17 +32,19 @@ export const LoggedInView: React.FC = () => {
     };
 
     return (
-        <div className="bg-slate-50 rounded-xl flex flex-row w-[60rem] justify-between p-10 m-auto shadow">
-            <div className="flex flex-col w-96 items-center gap-3 justify-between p-10">
-                <div className="pb-6 text-center">
-                    <img className="rounded-full w-44 mx-auto" src={session!.user!.image!} alt="User profile picture" />
-                    <h3 className="text-2xl font-extrabold mt-4">{session!.user!.name!}</h3>
-                    <p className="text-slate-700">{!user?.isTeacher ? toRoman(user.classYear) + ". ročník" : "Učitel"}</p>
-                </div>
+        <div className="flex flex-col md:flex-row w-full">
+            <div className="flex flex-row md:flex-col mb-5 md:w-80 md:py-6 md:mx-10">
+                <img className="rounded-full w-30 md:w-48 md:mx-auto my-auto p-4" src={session!.user!.image!} alt="User profile picture" />
+                <div className="flex flex-col p-4 w-full">
+                    <h3 className="text-2xl font-extrabold mt-4 mx-auto text-center">{session!.user!.name!}</h3>
+                    <p className="text-slate-700 text-center">{!user?.isTeacher ? toRoman(user.classYear) + ". ročník" : "Učitel"}</p>
 
-                <button className="text-slate-700 bg-purple-100 hover:bg-red-600 hover:text-white px-4 py-2 rounded-3xl font-semibold transition duration-100 w-2/3" onClick={() => signOut()}>Odhlásit se</button>
+                    <button className="text-slate-700 bg-purple-100/[.5] hover:bg-red-600 hover:text-white py-2 mt-4 rounded-3xl font-semibold transition duration-100" onClick={() => signOut()}>
+                        Odhlásit se
+                    </button>
+                </div>
             </div>
-            <div className="flex flex-col w-full px-8">
+            <div className="flex flex-col w-full">
                 {user.isTeacher ? (
                     <TeacherView />
                 ) : (
@@ -98,7 +100,7 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
     }
 
     return (
-        <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
+        <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12 w-full">
             <div className="flex flex-col w-full h-full gap-6">
                 <div className="flex flex-row">
                     <img src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>

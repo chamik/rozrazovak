@@ -27,7 +27,6 @@ export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
     const user = session?.user;
     const pathname = usePathname();
 
-    // TODO: userouter to color the currently used tab
     return (
         <div className="flex flex-col purple-gradient min-h-screen">
             <nav className="border-2 mb-10 mt-6 flex flex-row justify-around w-[70rem] mx-auto h-24 bg-purple-100 rounded-3xl">

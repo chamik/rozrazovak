@@ -1,31 +1,32 @@
 import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import { LoggedInView } from "../components/loggedInView";
+import { env } from "../env/client.mjs";
 
 const Home: NextPage = () => {
-    const { data: session } = useSession()
-    const year = new Date().getFullYear();
+    const { data: session } = useSession();
+    const SUBTITLE = env.NEXT_PUBLIC_SUBTITLE;
 
     return (
-        <>
-            <main className="flex flex-col items-center justify-center h-screen purple-gradient">
-                <div className="m-auto">
-                    {session ? (<LoggedInView />)
-                    : (
-                            <div className="bg-slate-50 rounded-xl flex flex-row w-[55rem] justify-between p-10 mx-auto shadow text-center">
-                                <div className="w-1/3 flex flex-col h-full my-auto">
-                                    <h1 className="font-extrabold text-2xl">Rozřazovák {year}</h1>
-                                    <p className="mt-1 text-slate-600 font-semibold">rozřazovací test pro GJP-ME</p>
-                                </div>
-                                <div className="w-2/3 flex flex-col h-full m-auto">
-                                    <button className="major-button" onClick={() => signIn('google')}>Přihlásit se</button>
-                                    <p className="mt-2 text-slate-600 font-semibold">se školním Google účtem</p>
-                                </div>
-                            </div>
-                    )}
+        <main className="flex flex-colitems-center justify-center h-screen purple-gradient">
+        {session ? (
+        <div className="bg-slate-50 rounded-xl flex flex-col md:flex-row p-2 m-auto shadow w-5/6 max-w-3xl">
+            <LoggedInView />
+        </div>
+        ) : (
+            <div className="flex flex-col md:flex-row bg-slate-50 w-4/5 max-w-3xl rounded-md shadow-lg p-7 max-h-72 my-auto">
+                <div className="flex flex-col my-auto md:ml-6">
+                    <h1 className="font-extrabold text-2xl text-center">Rozřazovák</h1>
+                    <h3 className="text-slate-600 font-semibold text-center">{SUBTITLE}</h3>
                 </div>
-            </main>
-        </>
+
+                <div className="flex flex-col mt-8 md:mt-0 md:mx-auto">
+                    <button className="major-button mx-auto" onClick={() => signIn('google')}>Přihlásit se</button>
+                    <p className="mt-2 text-slate-600 font-semibold text-center">se školním Google účtem</p>
+                </div>
+            </div>
+        )}
+        </main>
     );
 };
 
