@@ -1,7 +1,6 @@
 import { Test, TestSession, TestStatus, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import test from "node:test";
 import { minuta, otazka, toRoman } from "../utils/functions";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/router";
@@ -11,7 +10,7 @@ export const LoggedInView: React.FC = () => {
     const year = new Date().getFullYear();
     const router = useRouter();
 
-    // TODO: refresh every n seconds
+    // TODO: even though i invalidate this endpoint after toggling a test it doesn't update 🤔
     const userData = trpc.user.getUserData.useQuery();
     const beginTestMut = trpc.user.beginTest.useMutation();
 
@@ -23,7 +22,7 @@ export const LoggedInView: React.FC = () => {
         user,
         test,
         testSession,
-    } = userData?.data;
+    } = userData.data;
 
     const beginTest = async () => {
         if (!testSession)
@@ -80,13 +79,13 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
 
     if (!test)
         return (
-            <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
+            <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-4 md:p-12">
                 <p className="text-xl mx-6 my-auto text-center font-bold">Aktuálně pro tebe není zadaný žádný test.</p>
             </div>
         );
 
     if (session?.status == TestStatus.PENDING) return(
-        <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12">
+        <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-4 md:p-12">
             <p className="text-xl mx-6 my-auto text-center font-bold">Test je vyplněný!</p>
         </div>
     );

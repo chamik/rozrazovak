@@ -2,6 +2,7 @@ import { router, publicProcedure, protectedProcedure, teacherProcedure } from ".
 import { prisma } from "../../../server/db/client";
 import { z } from "zod";
 import { TestStatus } from "@prisma/client";
+import { trpc } from "../../../utils/trpc";
 
 export const adminRouter = router({
   getAllQuestions: teacherProcedure.query(async ({ ctx }) => {
@@ -205,7 +206,12 @@ export const adminRouter = router({
 
   areTestsRunning: teacherProcedure.query(async () => {
     return (await prisma.test.findMany({
-      where: { status: TestStatus.ACTIVE }
+      where: {
+        OR: [
+          { status: TestStatus.ACTIVE },
+          { status: TestStatus.PENDING },
+        ],
+      },
     })).length != 0;
   })
 });
