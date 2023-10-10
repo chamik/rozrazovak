@@ -85,8 +85,9 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
         );
 
     if (session?.status == TestStatus.PENDING) return(
-        <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-4 md:p-12">
-            <p className="text-xl mx-6 my-auto text-center font-bold">Test je vyplněný!</p>
+        <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-4 md:p-12 text-center">
+            <p className="text-xl mx-6 pb-2 my-auto font-bold">Test je vyplněný!</p>
+            <p>Správně jsi odpověděl na {session.correctAnswers.length}/{session.wrongAnswers.length} otázek.</p>
         </div>
     );
 

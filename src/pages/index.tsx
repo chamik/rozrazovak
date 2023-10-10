@@ -15,7 +15,7 @@ const Home: NextPage = () => {
                 <LoggedInView />
             </div>
         ) : (
-            <div className="flex flex-col md:flex-row bg-slate-50 w-4/5 max-w-3xl rounded-md shadow-lg p-7 max-h-72 my-auto">
+            <div className="flex flex-col md:flex-row bg-slate-50 w-4/5 max-w-3xl rounded-md shadow-lg p-7 max-h-72 m-auto">
                 <div className="flex flex-col my-auto md:ml-6">
                     <h1 className="font-extrabold text-2xl text-center">Rozřazovák</h1>
                     <h3 className="text-slate-600 font-semibold text-center">{SUBTITLE}</h3>

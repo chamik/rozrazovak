@@ -22,6 +22,7 @@ export const serverSchema = z.object({
     (str) => typeof str === "string" ? str.split(",") : [],
     z.array(z.string())
   ),
+  ALLOW_MIGRATION_DATA_LOSS: z.string(),
 });
 
 /**
