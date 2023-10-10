@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import Link from "next/link";
 
 const Begone: NextPage = () => {
     // TODO: něco sem dej
@@ -14,7 +15,7 @@ const Begone: NextPage = () => {
                     <p className="mb-3">zlobí se na tebe, protože tu nemáš co dělat {">:("}</p>
                     <p className="mb-3">{">:("}</p>
                     <p className="mb-3">(zkus si zkontrolovat, zdali jsi nepoužil účet osobní, místo školního).</p>
-                    <p className="mb-3"><a className="text-purple-900 underline" href="/">VRAŤ SE ZPĚT</a></p>
+                    <p className="mb-3"><Link className="text-purple-900 underline" href="/">VRAŤ SE ZPĚT</Link></p>
                 </div>
             </div>
         </main>
