@@ -45,6 +45,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ account, user, profile }) {
       if (profile === undefined) return '/begone';
 
+      // TODO: not redirecting unauthorized domain emails
       if (profile.email?.endsWith("@gjp-me.cz")) return true;
       if (env.TEACHER_EMAILS.includes(profile.email!)) return true;  // this is just so I can debug with my private email
       return '/begone'
