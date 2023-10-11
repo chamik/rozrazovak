@@ -119,7 +119,7 @@ enum TestSessionStatus {
 model TestSession {
   id        Int               @id @default(autoincrement())
   startTime DateTime
-  // endTime   DateTime
+  endTime   DateTime
   status    TestSessionStatus @default(ACTIVE)
 
   testId Int

@@ -13,6 +13,12 @@ const shuffle = <T>(a: T[]): T[] => {
   return shuffled;
 }
 
+const timeDifferenceSeconds = (start: Date, end: Date) => {
+  const diff = end.getTime() - start.getTime();
+  const seconds = Math.floor(diff / 1000);
+  return seconds;
+}
+
 export const userRouter = router({
   getUserData: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findFirst({ where: { email: ctx.session.user.email } });
@@ -75,14 +81,19 @@ export const userRouter = router({
 
     const questions = A1questions.concat(A2questions, B1questions, B2questions, C1questions, C2questions)
 
+    const start = new Date();
+    const end = new Date();
+    end.setSeconds(start.getSeconds() + (test.timeLimit * 60));
+
     const session = await prisma.testSession.create({
       data: {
-        startTime: new Date(),
+        startTime: start,
+        endTime: end,
         grammarQuestionsIds: questions,
         userId: user.id,
         testId: test.id,
       }
-    })
+    });
   }),
 
   getTestData: protectedProcedure.query(async ({ ctx }) => {
@@ -200,8 +211,11 @@ export const userRouter = router({
 
     const sesh = await prisma.testSession.findFirst({
         where: {
-          userId: user.id,
-        }
+          AND: [
+            { userId: user.id },
+            { status: TestStatus.ACTIVE }
+          ],
+        },
     });
 
     if (!sesh)

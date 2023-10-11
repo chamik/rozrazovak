@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 
 export const LoggedInView: React.FC = () => {
     const { data: session } = useSession()
-    const year = new Date().getFullYear();
     const router = useRouter();
 
     // TODO: even though i invalidate this endpoint after toggling a test it doesn't update 🤔
@@ -87,7 +86,7 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
     if (session?.status == TestStatus.PENDING) return(
         <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-4 md:p-12 text-center">
             <p className="text-xl mx-6 pb-2 my-auto font-bold">Test je vyplněný!</p>
-            <p>Správně jsi odpověděl na {session.correctAnswers.length}/{session.wrongAnswers.length} otázek.</p>
+            <p>Správně jsi odpověděl na {session.correctAnswers.length}/{session.grammarQuestionsIds.length} otázek.</p>
         </div>
     );
 
