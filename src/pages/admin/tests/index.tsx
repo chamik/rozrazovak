@@ -193,6 +193,16 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                             <p><span className="ml-2 font-bold text-slate-700">{test.timeLimit}</span> min.</p>
                         </div>
                     </div>
+
+                    {test.status == TestStatus.PENDING && (
+                        <div className="ml-10 flex flex-col bg-purple-100 p-4">
+                            <h3 className="font-semibold text-slate-500 mt-1 mb-2 text-center">Stáhnout výsledky</h3>
+                            <div className="flex flex-col text-xl text-purple-900 mx-auto underline">
+                                <button>Excel tabulka</button>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex flex-col justify-evenly ml-auto mr-4 w-60">
                         {test.status == TestStatus.IDLE && (
                             <Link href={`/admin/tests/?id=${test.id}`} key={test.id} onClick={() => getTestDataCallback(test.id)} className="mx-auto text-slate-500 hover:ring-2 ring-purple-600 rounded-3xl font-semibold py-2 px-5">

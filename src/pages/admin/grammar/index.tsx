@@ -112,7 +112,7 @@ const AdminQuestion: NextPageWithLayout = () => {
 
     if (runningTests) return (
         <div className="w-full flex flex-col">
-            <p className="text-center text-lg font-bold">Během testování nelze upravovat otázky. Zkontrolujte, zdali nějaký neběží.</p>
+            <p className="text-center text-lg font-bold">Pro úpravu otázek musí mít všechny testy status <span className="text-red-700 font-extrabold">VYPNUTÝ</span></p>
         </div>
     )
 
