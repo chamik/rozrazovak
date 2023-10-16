@@ -92,6 +92,7 @@ export const userRouter = router({
         grammarQuestionsIds: questions,
         userId: user.id,
         testId: test.id,
+        successRate: 0,
       }
     });
   }),
@@ -267,6 +268,7 @@ export const userRouter = router({
         correctAnswers: correct,
         wrongAnswers: wrong,
         status: TestStatus.PENDING,
+        successRate: correct.length / questions.length,
       },
     });
   }),

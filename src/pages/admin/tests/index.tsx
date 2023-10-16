@@ -20,6 +20,7 @@ const AdminQuestion: NextPageWithLayout = () => {
     const availQuery = trpc.admin.getQuestionLevels.useQuery();
     const testStartMut = trpc.admin.toggleTest.useMutation();
     const restartTestMut = trpc.admin.restartTest.useMutation();
+    const downloadResultsMut = trpc.admin.downloadResults.useMutation();
 
     const tests = testsData.data?.tests.sort((a, b) => a.class - b.class);
     const avail = availQuery.data!;
@@ -62,6 +63,17 @@ const AdminQuestion: NextPageWithLayout = () => {
         });
         utils.admin.getAllTests.invalidate();
         utils.user.getUserData.invalidate();
+    }
+
+    const downloadResults = async (testId: number) => {
+        const data = await downloadResultsMut.mutateAsync({
+            testId,
+        });
+        if (!data) return;
+
+        const mediaType = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,";
+
+        window.open(`${mediaType}${data}`, "_blank");
     }
 
     const setTest = (test: Test) => {
@@ -132,7 +144,7 @@ const AdminQuestion: NextPageWithLayout = () => {
                         goBack,
                     }} />
                 </Modal>}
-                <TestsListing tests={tests} getTestDataCallback={(id) => getTestData(id)} toggleTest={toggleTest} restartTest={restartTest} />
+                <TestsListing tests={tests} getTestDataCallback={(id) => getTestData(id)} toggleTest={toggleTest} restartTest={restartTest} downloadResults={downloadResults} />
             </main>
         </>
     );
@@ -143,6 +155,7 @@ type TestsListingProps = {
     getTestDataCallback: (id: number) => void,
     toggleTest: (testId:number) => void,
     restartTest: (testId:number) => void,
+    downloadResults: (testId:number) => void,
 };
 
 const TestsListing: React.FC<TestsListingProps> = (props) => {
@@ -150,7 +163,8 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
         tests,
         getTestDataCallback,
         toggleTest,
-        restartTest
+        restartTest,
+        downloadResults,
     } = props;
 
     if (!tests) return (
@@ -198,7 +212,7 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                         <div className="ml-10 flex flex-col bg-purple-100 p-4">
                             <h3 className="font-semibold text-slate-500 mt-1 mb-2 text-center">Stáhnout výsledky</h3>
                             <div className="flex flex-col text-xl text-purple-900 mx-auto underline">
-                                <button>Excel tabulka</button>
+                                <button onClick={async () => await downloadResults(test.id)}>Excel tabulka</button>
                             </div>
                         </div>
                     )}

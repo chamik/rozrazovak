@@ -133,6 +133,7 @@ model TestSession {
 
   correctAnswers Int[] @default([])
   wrongAnswers   Int[] @default([])
+  successRate    Float
 }
 
 model Answer {

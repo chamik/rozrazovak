@@ -3,6 +3,7 @@ import { prisma } from "../../../server/db/client";
 import { z } from "zod";
 import { TestStatus } from "@prisma/client";
 import { trpc } from "../../../utils/trpc";
+import { Workbook } from "exceljs";
 
 export const adminRouter = router({
   getAllQuestions: teacherProcedure.query(async ({ ctx }) => {
@@ -213,5 +214,60 @@ export const adminRouter = router({
         ],
       },
     })).length != 0;
-  })
+  }),
+
+  downloadResults: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+    const test = await prisma.test.findFirst({ where: { id: input.testId }});
+    if (!test) return;
+    
+    if (test.status != TestStatus.PENDING) return;
+
+    const results = await prisma.testSession.findMany({
+      where: {
+        testId: input.testId,
+      }, 
+      orderBy: {
+        successRate: "desc",
+      }
+    });
+
+    if (!results) return;
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: {
+          in: results.map(x => x.userId),
+        }, 
+      },
+    })
+
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Výsledky testu')
+
+    worksheet.columns = [
+      { header: "Jméno", key: "name", width: 30 },
+      { header: "Úspěšnost", key: "success", width: 10 },
+      { header: "E-mail", key: "email", width: 40 },
+      { header: "ID špatných odpovědí", key: "wrongIds", width: 200 },
+    ];
+
+    const usrs = users.reduce((acc, user) => {
+      acc[user.id] = user;
+      return acc;
+    }, {} as { [key: string]: typeof users[0] });
+
+    results.forEach(s => {
+      worksheet.addRow({
+        name: usrs[s.userId]?.name ?? "Bezejmenný",
+        success: (s.successRate * 100).toFixed(1) + "%",
+        email: usrs[s.userId]?.email ?? "???",
+        wrongIds: s.wrongAnswers.join(" "),
+      });
+    });
+
+    const bf = await workbook.xlsx.writeBuffer();
+    const st = Buffer.from(bf).toString("base64");
+
+    return st;
+  }),
 });
