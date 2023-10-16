@@ -1,4 +1,4 @@
-import { GetServerSideProps, type NextPage } from "next";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { NextPageWithLayout } from "../../_app";
 import { AdminLayout } from "../../../components/admin/adminLayout";

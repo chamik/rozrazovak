@@ -1,6 +1,6 @@
 import { protectedProcedure, router } from "../trpc";
 import { prisma } from "../../../server/db/client";
-import { Prisma, Question, TestStatus } from "@prisma/client";
+import { TestStatus } from "@prisma/client";
 import { z } from "zod";
 
 const shuffleAndTake = (ids: number[], n: number): number[] => {
@@ -13,15 +13,10 @@ const shuffle = <T>(a: T[]): T[] => {
   return shuffled;
 }
 
-const timeDifferenceSeconds = (start: Date, end: Date) => {
-  const diff = end.getTime() - start.getTime();
-  const seconds = Math.floor(diff / 1000);
-  return seconds;
-}
-
 export const userRouter = router({
   getUserData: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findFirst({ where: { email: ctx.session.user.email } });
+    if (!user) return;
     const test = await prisma.test.findFirst({
       where: {
         AND: [
@@ -45,7 +40,7 @@ export const userRouter = router({
     });
 
     return {
-      user: user!,
+      user: user,
       test,
       testSession,
     };
@@ -85,7 +80,7 @@ export const userRouter = router({
     const end = new Date();
     end.setSeconds(start.getSeconds() + (test.timeLimit * 60));
 
-    const session = await prisma.testSession.create({
+    await prisma.testSession.create({
       data: {
         startTime: start,
         endTime: end,

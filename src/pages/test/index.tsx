@@ -124,7 +124,7 @@ const Answers: React.FC<AnswersProps> = (props) => {
         <RadioGroup value={selected} onChange={setSelected}>
             {answers.map(a => (
                 <RadioGroup.Option key={a} value={a} as={Fragment}>
-                    {({ active, checked }) => (
+                    {({ checked }) => (
                         <div className={`bg-slate-100 rounded-lg py-2 px-3 my-2 ${ checked && '!bg-purple-200 font-semibold'}`}
                             onClick={async () => await submitAnswer(questionId, a, testSessionId, endTime, submitTest)}
                         >

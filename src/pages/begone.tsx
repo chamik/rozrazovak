@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 const Begone: NextPage = () => {
@@ -7,7 +8,7 @@ const Begone: NextPage = () => {
         <main className="flex flex-col h-screen purple-gradient">
             <div className="m-auto w-full max-w-md md:max-w-3xl px-10 py-7 shadow-lg items-center rounded-2xl bg-purple-50 flex flex-col md:flex-row">
                 <div className="flex mb-4 md:mb-0 md:mr-4">
-                    <img src="sumisplouchalik.png" alt="šumišplouchalík" />
+                    <Image src="sumisplouchalik.png" alt="šumišplouchalík" />
                 </div>
                 <div className="flex flex-col w-full h-full p-2">
                     <p className="mb-3">koukni na něj {">:("}</p>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { minuta, otazka, toRoman } from "../utils/functions";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 export const LoggedInView: React.FC = () => {
     const { data: session } = useSession()
@@ -32,7 +33,7 @@ export const LoggedInView: React.FC = () => {
     return (
         <div className="flex flex-col md:flex-row w-full">
             <div className="flex flex-row md:flex-col mb-5 md:w-80 md:py-6 md:mx-10">
-                <img className="rounded-full w-30 md:w-48 md:mx-auto my-auto p-4" src={session!.user!.image!} alt="User profile picture" />
+                <Image className="rounded-full w-30 md:w-48 md:mx-auto my-auto p-4" src={session!.user!.image!} alt="User profile picture" />
                 <div className="flex flex-col p-4 w-full">
                     <h3 className="text-2xl font-extrabold mt-4 mx-auto text-center">{session!.user!.name!}</h3>
                     <p className="text-slate-700 text-center">{!user?.isTeacher ? toRoman(user.classYear) + ". ročník" : "Učitel"}</p>
@@ -62,7 +63,6 @@ type StudentViewProps = {
 
 const StudentView: React.FC<StudentViewProps> = (props) => {
     const {
-        user,
         test,
         session,
         beginTest,
@@ -102,15 +102,15 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
         <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12 w-full">
             <div className="flex flex-col w-full h-full gap-6">
                 <div className="flex flex-row">
-                    <img src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
+                    <Image src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
                     <p className="text-xl mx-6 my-auto"><span className="font-bold">{test.timeLimit}</span> {minuta(test.timeLimit)}</p>
                 </div>
                 <div className="flex flex-row">
-                    <img src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
+                    <Image src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
                     <p className="text-xl mx-6 my-auto"><span className="font-bold">{amount}</span> {otazka(amount)}</p>
                 </div>
                 <div className="flex flex-row">
-                    <img src='/svg/bolt-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
+                    <Image src='/svg/bolt-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
                     <p className="text-xl mx-6 my-auto">obtížnost <span className="font-bold">{diff[0]}</span> {diff[0] != diff[1] && (<>až <span className="font-bold">{diff[1]}</span></>)}</p>
                 </div>
             </div>

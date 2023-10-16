@@ -1,12 +1,11 @@
-import { router, publicProcedure, protectedProcedure, teacherProcedure } from "../trpc";
+import { router, teacherProcedure } from "../trpc";
 import { prisma } from "../../../server/db/client";
 import { z } from "zod";
 import { TestStatus } from "@prisma/client";
-import { trpc } from "../../../utils/trpc";
 import { Workbook } from "exceljs";
 
 export const adminRouter = router({
-  getAllQuestions: teacherProcedure.query(async ({ ctx }) => {
+  getAllQuestions: teacherProcedure.query(async () => {
 
     const questions = await prisma.question.findMany();
 
@@ -16,7 +15,7 @@ export const adminRouter = router({
   }),
 
   /** This is not a mutation really, just an ugly way to trick trpc */
-  getQuestionById: teacherProcedure.input(z.object({ questionId: z.number() })).mutation(async ({ ctx, input }) => {
+  getQuestionById: teacherProcedure.input(z.object({ questionId: z.number() })).mutation(async ({ input }) => {
     const question = await prisma.question.findFirst({
       where: {
         id: input.questionId
@@ -27,7 +26,7 @@ export const adminRouter = router({
   }),
 
   /** This is not a mutation really, just an ugly way to trick trpc */
-  getTestById: teacherProcedure.input(z.object({ testId: z.number() })).mutation(async ({ ctx, input }) => {
+  getTestById: teacherProcedure.input(z.object({ testId: z.number() })).mutation(async ({ input }) => {
     const test = await prisma.test.findFirst({
       where: {
         id: input.testId
@@ -44,8 +43,8 @@ export const adminRouter = router({
     pointAmount: z.number().min(0).max(10),
     rightAnswer: z.string().min(1),
     wrongAnswers: z.array(z.string()),
-  })).mutation(async ({ ctx, input }) => {
-    const question = await prisma.question.update({
+  })).mutation(async ({ input }) => {
+    await prisma.question.update({
       where: {
         id: input.questionId
       },
@@ -91,7 +90,7 @@ export const adminRouter = router({
     ];
   }),
 
-  deleteQuestion: teacherProcedure.input(z.object({ id: z.number() })).mutation(async ({ ctx, input }) => {
+  deleteQuestion: teacherProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
     await prisma.question.delete({
       where: {
         id: input.id,
@@ -99,7 +98,7 @@ export const adminRouter = router({
     });
   }),
 
-  getAllTests: teacherProcedure.query(async ({ ctx }) => {
+  getAllTests: teacherProcedure.query(async () => {
     let tests = await prisma.test.findMany();
 
     if (tests.length == 0) {
@@ -136,7 +135,7 @@ export const adminRouter = router({
     grammarB2Amount: z.number().min(0),
     grammarC1Amount: z.number().min(0),
     grammarC2Amount: z.number().min(0),
-  })).mutation(async ({ ctx, input }) => {
+  })).mutation(async ({ input }) => {
     await prisma.test.update({
       where: {
         id: input.id
@@ -147,7 +146,7 @@ export const adminRouter = router({
     })
   }),
 
-  deleteTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+  deleteTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ input }) => {
     await prisma.test.delete({
       where: {
         id: input.testId
@@ -156,7 +155,7 @@ export const adminRouter = router({
   }),
 
   // TODO: this doesn't really deal with the time. Maybe reset it when PENDING -> ACTIVE??
-  toggleTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+  toggleTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ input }) => {
     const test = await prisma.test.findFirst({ where: { id: input.testId }});
     if (!test) return;
 
@@ -183,7 +182,7 @@ export const adminRouter = router({
     
   }),
 
-  restartTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+  restartTest: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ input }) => {
     const test = await prisma.test.findFirst({ where: { id: input.testId }});
     if (!test) return;
     
@@ -216,7 +215,7 @@ export const adminRouter = router({
     })).length != 0;
   }),
 
-  downloadResults: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ ctx, input }) => {
+  downloadResults: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ input }) => {
     const test = await prisma.test.findFirst({ where: { id: input.testId }});
     if (!test) return;
     

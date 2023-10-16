@@ -1,6 +1,7 @@
 import { RadioGroup } from "@headlessui/react";
-import { Dispatch, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { languageLevels } from "../../utils/functions";
+import Image from "next/image";
 
 type GrammarEditStateBinding = {
     questionId: number,
@@ -24,7 +25,6 @@ type GrammarEditProps = {
 export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
     const {
         questionId,
-        setQuestionId,
         questionText,
         setQuestionText,
         questionLevel,
@@ -44,7 +44,7 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
     }
 
     const isEmpty = (t: string) => t.length == 0;
-    const isAnswerEmpty = (i: number) => questionWrongAnswers[i]!.length == 0;
+    const isAnswerEmpty = (i: number) => questionWrongAnswers[i]?.length == 0;
 
     // budiž toto důkazem že bůh je mrtev
     return (
@@ -52,7 +52,7 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
         <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
             <div className="flex flex-row mb-6">
                 <p className="mx-auto text-xl font-bold">Gramatická otázka ID {questionId}</p>
-                <img src='/svg/trash-solid.svg' alt='aye' className="rounded-full w-5 opacity-50 hover:ring-4 ring-red-600" onClick={deleteQuestion}/>
+                <Image src='/svg/trash-solid.svg' alt='aye' className="rounded-full w-5 opacity-50 hover:ring-4 ring-red-600" onClick={deleteQuestion}/>
             </div>
             <div className="flex flex-col mb-6">
                 <p className="ml-3 mb-1">Otázka</p>

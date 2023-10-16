@@ -1,8 +1,5 @@
-import { Test } from "@prisma/client"
-import { Dispatch, SetStateAction, useRef } from "react";
-import { AppRouter } from "../../server/trpc/router/_app";
-import { minuta, otazka, toRoman } from "../../utils/functions";
-import { AppRouterTypes, trpc } from "../../utils/trpc";
+import { Dispatch, SetStateAction } from "react";
+import { minuta, otazka } from "../../utils/functions";
 
 type TestEditStateBinding = {
     testId: number,
@@ -32,8 +29,6 @@ export type TestEditProps = {
 
 export const TestEdit: React.FC<TestEditProps> = props => {
     const {
-        testId,
-        setTestId,
         testTime,
         setTestTime,
         grammarA1Amount,
