@@ -2,7 +2,6 @@ import { signOut, useSession } from "next-auth/react";
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import type React from 'react';
-import Image from "next/image";
 
 const ADMIN_TABS = [
     {
@@ -41,7 +40,7 @@ export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
                 </div>
                 <div className="flex h-full ml-auto mr-20 p-2">
                     {user?.image && (
-                        <Image className="rounded-full w-16 my-auto" src={user.image} alt="User profile picture" />
+                        <img className="rounded-full w-16 my-auto" src={user.image} alt="User profile picture" />
                     )}
                     <div className="p-3 my-auto mx-4">
                         <p className="font-extrabold text-lg">{user?.name}</p>

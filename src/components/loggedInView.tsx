@@ -33,7 +33,7 @@ export const LoggedInView: React.FC = () => {
     return (
         <div className="flex flex-col md:flex-row w-full">
             <div className="flex flex-row md:flex-col mb-5 md:w-80 md:py-6 md:mx-10">
-                <Image className="rounded-full w-30 md:w-48 md:mx-auto my-auto p-4" src={session!.user!.image!} alt="User profile picture" />
+                <img className="rounded-full w-30 md:w-48 md:mx-auto my-auto p-4" src={session!.user!.image!} alt="User profile picture" />
                 <div className="flex flex-col p-4 w-full">
                     <h3 className="text-2xl font-extrabold mt-4 mx-auto text-center">{session!.user!.name!}</h3>
                     <p className="text-slate-700 text-center">{!user?.isTeacher ? toRoman(user.classYear) + ". ročník" : "Učitel"}</p>

@@ -244,10 +244,11 @@ export const adminRouter = router({
     const worksheet = workbook.addWorksheet('Výsledky testu')
 
     worksheet.columns = [
-      { header: "Jméno", key: "name", width: 30 },
-      { header: "Úspěšnost", key: "success", width: 10 },
-      { header: "E-mail", key: "email", width: 40 },
-      { header: "ID špatných odpovědí", key: "wrongIds", width: 200 },
+      { header: "Jméno", key: "name", width: 25 },
+      { header: "E-mail", key: "email", width: 30 },
+      { header: "Body gr.", key: "points_gr", width: 10},
+      { header: "Úspěšnost gr.", key: "success_gr", width: 15 },
+      { header: "ID špatných odpovědí gr.", key: "wrong_ids_gr", width: 40 },
     ];
 
     const usrs = users.reduce((acc, user) => {
@@ -258,9 +259,10 @@ export const adminRouter = router({
     results.forEach(s => {
       worksheet.addRow({
         name: usrs[s.userId]?.name ?? "Bezejmenný",
-        success: (s.successRate * 100).toFixed(1) + "%",
         email: usrs[s.userId]?.email ?? "???",
-        wrongIds: s.wrongAnswers.join(" "),
+        points_gr: s.correctAnswers.length,
+        success_gr: (s.successRate * 100).toFixed(1) + "%",
+        wrong_ids_gr: s.wrongAnswers.join(" "),
       });
     });
 
