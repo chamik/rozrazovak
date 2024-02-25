@@ -2,6 +2,8 @@
 
 Středoškolská odborná činnost - rozřazovací testy pro výuku anglického jazyka.
 
+Sepsanou práci najdeš [zde](https://github.com/chamik/soc).
+
 ## Cože?
 
 Každý rok se u nás na škole provádějí rozřazovací testy do skupin na angličtinu.
@@ -23,7 +25,7 @@ cd rozrazovak
 vim .env    # ano, musíš použít vim
 ```
 
-3. Sestav docker container
+3. Sestav docker container (nebo viz [build.md](https://github.com/chamik/rozrazovak/blob/main/BUILD.md)
 ```
 docker build -t rozrazovak .
 ```
