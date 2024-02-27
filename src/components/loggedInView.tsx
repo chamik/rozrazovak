@@ -9,6 +9,7 @@ import Image from "next/image";
 export const LoggedInView: React.FC = () => {
     const { data: session } = useSession()
     const router = useRouter();
+    const utils = trpc.useContext();
 
     // TODO: even though i invalidate this endpoint after toggling a test it doesn't update 🤔
     const userData = trpc.user.getUserData.useQuery();
@@ -25,8 +26,10 @@ export const LoggedInView: React.FC = () => {
     } = userData.data;
 
     const beginTest = async () => {
-        if (!testSession)
+        if (!testSession){
             await beginTestMut.mutateAsync();
+            await utils.admin.getCurrentlyTested.invalidate();
+        }
         router.push('/test');
     };
 
@@ -102,15 +105,15 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
         <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-12 w-full">
             <div className="flex flex-col w-full h-full gap-6">
                 <div className="flex flex-row">
-                    <Image src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
+                    <img src='/svg/hourglass-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
                     <p className="text-xl mx-6 my-auto"><span className="font-bold">{test.timeLimit}</span> {minuta(test.timeLimit)}</p>
                 </div>
                 <div className="flex flex-row">
-                    <Image src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
+                    <img src='/svg/question-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
                     <p className="text-xl mx-6 my-auto"><span className="font-bold">{amount}</span> {otazka(amount)}</p>
                 </div>
                 <div className="flex flex-row">
-                    <Image src='/svg/bolt-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
+                    <img src='/svg/bolt-solid.svg' alt='aye' className="text-blue-200 w-5 opacity-50"/>
                     <p className="text-xl mx-6 my-auto">obtížnost <span className="font-bold">{diff[0]}</span> {diff[0] != diff[1] && (<>až <span className="font-bold">{diff[1]}</span></>)}</p>
                 </div>
             </div>

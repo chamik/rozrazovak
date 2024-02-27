@@ -52,7 +52,7 @@ export const GrammarEdit: React.FC<GrammarEditProps> = (props) => {
         <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
             <div className="flex flex-row mb-6">
                 <p className="mx-auto text-xl font-bold">Gramatická otázka ID {questionId}</p>
-                <Image src='/svg/trash-solid.svg' alt='aye' className="rounded-full w-5 opacity-50 hover:ring-4 ring-red-600" onClick={deleteQuestion}/>
+                <img src='/svg/trash-solid.svg' alt='aye' className="rounded-full w-5 opacity-50 hover:ring-4 ring-red-600" onClick={deleteQuestion}/>
             </div>
             <div className="flex flex-col mb-6">
                 <p className="ml-3 mb-1">Otázka</p>

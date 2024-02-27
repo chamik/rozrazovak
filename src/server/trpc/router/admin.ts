@@ -271,4 +271,44 @@ export const adminRouter = router({
 
     return st;
   }),
+
+  getDashboardData: teacherProcedure.query(async () => {
+    const runningTests = (await prisma.test.findMany()).filter(x => x.status == "ACTIVE").length;
+    const availableQuestions = await prisma.question.count();
+
+    return {
+      runningTests,
+      availableQuestions,
+    }
+  }),
+
+  getCurrentlyTested: teacherProcedure.query(async () => {
+    const beingTestedIds = (await prisma.testSession.findMany({
+      where: {
+        status: "ACTIVE",
+      },
+      select: {
+        userId: true,
+      }
+    }));
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: {
+          in: beingTestedIds.map(x => x.userId),
+        }, 
+      },
+      orderBy: [
+        { classYear: "desc" },
+        { name: "asc" },
+      ],
+      select: {
+        name: true,
+        email: true,
+        classYear: true,
+      }
+    });
+
+    return users;
+  })
 });

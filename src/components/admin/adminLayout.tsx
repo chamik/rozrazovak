@@ -54,7 +54,8 @@ export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
                 {children}
             </div>
             <footer className="flex flex-row justify-start w-full h-14 px-8 gap-4 mt-auto">
-                <p className="font-semibold my-auto">Rozřazovák 2023</p>
+                <p className="font-semibold my-auto">Rozřazovák</p>
+                <p className="text-xs text-slate-600 my-auto">vytvořil Jakub Hampl, 2023/24</p>
             </footer>
         </div>
     )

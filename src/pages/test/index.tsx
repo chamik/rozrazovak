@@ -11,6 +11,7 @@ export const TestView: React.FC = () => {
     const submitTestMutation = trpc.user.submitTest.useMutation();
     const getTestDataQuery = trpc.user.getTestData.useQuery();
     const router = useRouter();
+    const utils = trpc.useContext();
 
     const [questions, setQuestions] = useState<{
         id: number,
@@ -75,6 +76,7 @@ export const TestView: React.FC = () => {
 
     const submitTest = async () => {
         await submitTestMutation.mutateAsync();
+        await utils.admin.getCurrentlyTested.refetch();
         router.push('/');
     };
 
