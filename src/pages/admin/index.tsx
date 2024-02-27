@@ -43,7 +43,7 @@ const AdminHome: NextPageWithLayout = () => {
                 <title>Rozřazovák | Admin panel</title>
             </Head>
 
-            <main className="flex min-h-screen flex-col w-full">
+            <main className="flex flex-col w-full">
                 <div className="flex flex-row justify-around bg-gradient-to-br from-purple-400 to-purple-500 w-full h-34 rounded-3xl p-8 shadow-md">
                     <div className="flex flex-col">
                         <p className="font-semibold text-slate-200/[.8]">OTÁZKY V DATABANCE</p>
