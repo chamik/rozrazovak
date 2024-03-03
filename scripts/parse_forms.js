@@ -34,6 +34,7 @@ function parseForm(formId) {
       questionText: title,
       rightAnswer: right_answer,
       wrongAnswers: wrong_answers,
+      languageLevel: 2,
     }
 
     questions.push(question);

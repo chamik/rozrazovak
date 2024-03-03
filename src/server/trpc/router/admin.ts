@@ -4,6 +4,25 @@ import { z } from "zod";
 import { TestStatus } from "@prisma/client";
 import { Workbook } from "exceljs";
 
+type BackupData = {
+  questions: {
+    questionText: string,
+    rightAnswer: string,
+    wrongAnswers: string[],
+    languageLevel: number,
+  }[],
+  tests: {
+    grammarA1Amount: number,
+    grammarA2Amount: number,
+    grammarB1Amount: number,
+    grammarB2Amount: number,
+    grammarC1Amount: number,
+    grammarC2Amount: number,
+    timeLimit: number,
+    class: number,
+  }[],
+}
+
 export const adminRouter = router({
   getAllQuestions: teacherProcedure.query(async () => {
 
@@ -310,5 +329,37 @@ export const adminRouter = router({
     });
 
     return users;
+  }),
+
+  downloadBackup: teacherProcedure.mutation(async () => {
+    const questions = await prisma.question.findMany({
+      select: {
+        questionText: true,
+        rightAnswer: true,
+        wrongAnswers: true,
+        languageLevel: true,
+      }
+    });
+
+    const tests = await prisma.test.findMany({
+      select: {
+        grammarA1Amount: true,
+        grammarA2Amount: true,
+        grammarB1Amount: true,
+        grammarB2Amount: true,
+        grammarC1Amount: true,
+        grammarC2Amount: true,
+        timeLimit: true,
+        class: true,
+      }
+    })
+
+    const backup: BackupData = {
+      questions,
+      tests,
+    };
+
+    const st = Buffer.from(JSON.stringify(backup)).toString("base64");
+    return st;
   })
 });

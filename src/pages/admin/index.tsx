@@ -30,6 +30,16 @@ const AdminHome: NextPageWithLayout = () => {
     const currentlyTestedQuery = trpc.admin.getCurrentlyTested.useQuery();
     const currentlyTested = currentlyTestedQuery.data;
 
+    const downloadBackupMut = trpc.admin.downloadBackup.useMutation();
+
+    const downloadBackup = async () => {
+        const data = await downloadBackupMut.mutateAsync();
+        if (!data) return;
+
+        const mediaType = "data:application/json;base64,";
+        window.open(`${mediaType}${data}`, "_blank");
+    }
+
     if (!dashboardData || !currentlyTested)
         return (
             <>
@@ -58,7 +68,6 @@ const AdminHome: NextPageWithLayout = () => {
                         <p className="font-extrabold text-slate-100 text-4xl">{dashboardData.runningTests}</p>
                     </div>
                 </div>
-
                 
                 <div className="flex flex-col w-full m-6 rounded-3xl mx-auto">
                     <p className="font-semibold text-slate-400 px-4 py-2">AKTUÁLNĚ TESTOVANÍ</p>
@@ -71,6 +80,10 @@ const AdminHome: NextPageWithLayout = () => {
                     {/* <QuestionsListing questions={questions} getQuestionDataCallback={(id) => getQuestionData(id)}/> */}
                     <UserListing users={currentlyTested} />
                 </div>
+
+                <button className="major-button text-purple-700" onClick={async () => await downloadBackup()}>
+                    Stáhnout zálohu
+                </button>
             </main>
         </>
     );
