@@ -10,11 +10,12 @@ import { Modal } from "../../../components/admin/modal";
 import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
 import { confirm } from "../../../components/admin/confirmModal";
+import { warning } from "../../../components/admin/warningModal";
 
 const AdminQuestion: NextPageWithLayout = () => {
     const testsData = trpc.admin.getAllTests.useQuery();
     const testQuery = trpc.admin.getTestById.useMutation();
-    const availQuery = trpc.admin.getQuestionLevels.useQuery();
+    const availQuery = trpc.admin.getQuestionAmounts.useQuery();
     const testStartMut = trpc.admin.toggleTest.useMutation();
     const restartTestMut = trpc.admin.restartTest.useMutation();
     const downloadResultsMut = trpc.admin.downloadResults.useMutation();
@@ -93,9 +94,18 @@ const AdminQuestion: NextPageWithLayout = () => {
     }
 
     const toggleTest = async (testId: number) => {
-        await testStartMut.mutateAsync({
+        const res = await testStartMut.mutateAsync({
             testId,
         });
+
+        if (res == -32600) {
+            await warning({
+                warningText: "Test se nepodařilo spustit. Zkontrolujte jeho nastavení.",
+                confirmText: "Rozumím",
+            });
+            return;
+        }
+
         utils.admin.getAllTests.invalidate();
         utils.user.getUserData.invalidate();
         utils.admin.areTestsRunning.invalidate();
@@ -115,7 +125,6 @@ const AdminQuestion: NextPageWithLayout = () => {
         });
     }
 
-    //TODO: Call to action (not needed? if still at bottom of page :thonk:)
     if (!tests || tests.length == 0) return (
         <>
             nic :

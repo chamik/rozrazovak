@@ -3,6 +3,7 @@ import { prisma } from "../../../server/db/client";
 import { z } from "zod";
 import { TestStatus } from "@prisma/client";
 import { Workbook } from "exceljs";
+import { TRPC_ERROR_CODES_BY_KEY, TRPC_ERROR_CODES_BY_NUMBER } from "@trpc/server/rpc";
 
 type BackupData = {
   questions: {
@@ -21,6 +22,19 @@ type BackupData = {
     timeLimit: number,
     class: number,
   }[],
+}
+
+const questionAmounts = async () => {
+  const questions = await prisma.question.findMany();
+
+  return [
+    questions.filter(x => x.languageLevel == 0).length,
+    questions.filter(x => x.languageLevel == 1).length,
+    questions.filter(x => x.languageLevel == 2).length,
+    questions.filter(x => x.languageLevel == 3).length,
+    questions.filter(x => x.languageLevel == 4).length,
+    questions.filter(x => x.languageLevel == 5).length,
+  ];
 }
 
 export const adminRouter = router({
@@ -97,16 +111,8 @@ export const adminRouter = router({
     return question;
   }),
 
-  getQuestionLevels: teacherProcedure.query(async ({ ctx }) => {
-    const questions = await ctx.prisma.question.findMany();
-    return [
-      questions.filter(x => x.languageLevel == 0).length,
-      questions.filter(x => x.languageLevel == 1).length,
-      questions.filter(x => x.languageLevel == 2).length,
-      questions.filter(x => x.languageLevel == 3).length,
-      questions.filter(x => x.languageLevel == 4).length,
-      questions.filter(x => x.languageLevel == 5).length,
-    ];
+  getQuestionAmounts: teacherProcedure.query(async () => {
+    return await questionAmounts();
   }),
 
   deleteQuestion: teacherProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
@@ -189,7 +195,18 @@ export const adminRouter = router({
       });
     } 
     else {
-      // TODO: validate test
+      const avail = await questionAmounts();
+
+      let isValid = true;
+      isValid &&= test.grammarA1Amount <= avail[0]!;
+      isValid &&= test.grammarA2Amount <= avail[1]!;
+      isValid &&= test.grammarB1Amount <= avail[2]!;
+      isValid &&= test.grammarB2Amount <= avail[3]!;
+      isValid &&= test.grammarC1Amount <= avail[4]!;
+      isValid &&= test.grammarC2Amount <= avail[5]!;
+
+      if (!isValid)
+        return TRPC_ERROR_CODES_BY_KEY.BAD_REQUEST;
 
       await prisma.test.update({
         where: {
