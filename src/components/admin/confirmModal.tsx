@@ -11,7 +11,6 @@ type ConfirmModalProps = {
     cancelText: string,
 }
 
-// TODO: i don't understand typescript :)
 const ConfirmModalInner: ConfirmDialog<ConfirmModalProps, ConfirmModalResult> = (props) => {
     const { show, proceed, warningText, confirmText, cancelText } = props;
 

@@ -189,6 +189,8 @@ export const adminRouter = router({
       });
     } 
     else {
+      // TODO: validate test
+
       await prisma.test.update({
         where: {
           id: input.testId
@@ -366,6 +368,8 @@ export const adminRouter = router({
   uploadBackup: teacherProcedure.input(z.object({base64Backup: z.string()})).mutation(async ({input}) => {
     const backupText = Buffer.from(input.base64Backup, "base64").toString();
     const backupObj = JSON.parse(backupText) as BackupData;
+
+    // TODO: validate uploaded data?
 
     await prisma.question.deleteMany({});
     for (const q of backupObj.questions) {

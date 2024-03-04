@@ -54,7 +54,6 @@ export const TestEdit: React.FC<TestEditProps> = props => {
         return testTime / questionSum();
     }
 
-    // TODO: no UI here :(
     return (
         <div className="flex flex-col border-b-2 mb-10 w-full h-full bg-purple-100 rounded-3xl p-10 px-14">
             <p className="font-bold mb-4">Počty otázek podle obtížnosti</p>

@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 const Begone: NextPage = () => {
-    // TODO: něco sem dej
     return (
         <main className="flex flex-col h-screen purple-gradient">
             <div className="m-auto w-full max-w-md md:max-w-3xl px-10 py-7 shadow-lg items-center rounded-2xl bg-purple-50 flex flex-col md:flex-row">

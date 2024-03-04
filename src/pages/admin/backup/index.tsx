@@ -4,27 +4,6 @@ import { NextPageWithLayout } from "../../_app";
 import { confirm } from "../../../components/admin/confirmModal";
 import { useState } from "react";
 
-const toBase64 = (file: File): Promise<string | undefined> => {
-    return new Promise((resolve, reject) => {
-        const fileReader = new FileReader();
-        
-        fileReader.readAsDataURL(file);
-        
-        fileReader.onload = () => {
-            if (!fileReader.result) {
-                reject();
-                return undefined;
-            }
-
-            resolve(fileReader.result.toString());
-        };
-        
-        fileReader.onerror = (error) => {
-            reject(error);
-        };
-    });
-};
-
 const AdminBackup: NextPageWithLayout = () => {
     const downloadBackupMut = trpc.admin.downloadBackup.useMutation();
     const uploadBackupMut = trpc.admin.uploadBackup.useMutation();
@@ -52,15 +31,10 @@ const AdminBackup: NextPageWithLayout = () => {
         if (!modalResult.status)
             return;
 
-        
-
-        // const base64 = await toBase64(file);
         const fbuf = await file.arrayBuffer();
         const base64 = Buffer.from(fbuf).toString("base64");
         if (!base64)
             return;
-
-        console.log({base64});
 
         await uploadBackupMut.mutateAsync({
             base64Backup: base64,

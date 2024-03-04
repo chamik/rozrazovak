@@ -57,8 +57,8 @@ const AdminQuestion: NextPageWithLayout = () => {
     const restartTest = async (testId: number) => {
         const modalResult = await confirm({
             warningText: "TATO AKCE NENÁVRATNĚ SMAŽE VŠECHNY VYPLNĚNÉ VÝSLEDKY! UJISTĚTE SE, ŽE MÁTE STAŽENÉ VÝSLEDKY V EXCEL TABULCE!",
-            cancelText: "NEMÁM STAŽENOU ZÁLOHU",
-            confirmText: "ANO, MÁM STAŽENOU ZÁLOHU, VÍM, CO DĚLÁM",
+            cancelText: "NEMÁM STAŽENÉ VÝSLEDKY",
+            confirmText: "ANO, MÁM STAŽENÉ VÝSLEDKY, VÍM, CO DĚLÁM",
         });
         if (!modalResult.status)
             return;

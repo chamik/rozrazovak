@@ -128,7 +128,6 @@ const AdminQuestion: NextPageWithLayout = () => {
         </div>
     )
 
-    // TODO: disable listing when any test is active
     return (
         <>
             <main className="flex-col w-full">
