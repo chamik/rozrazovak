@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Modal } from "../../../components/admin/modal";
 import { useRouter } from "next/router";
 import { useSearchParams } from "next/navigation";
+import { confirm } from "../../../components/admin/confirmModal";
 
 const AdminQuestion: NextPageWithLayout = () => {
     const testsData = trpc.admin.getAllTests.useQuery();
@@ -54,6 +55,14 @@ const AdminQuestion: NextPageWithLayout = () => {
     }
 
     const restartTest = async (testId: number) => {
+        const modalResult = await confirm({
+            warningText: "TATO AKCE NENÁVRATNĚ SMAŽE VŠECHNY VYPLNĚNÉ VÝSLEDKY! UJISTĚTE SE, ŽE MÁTE STAŽENÉ VÝSLEDKY V EXCEL TABULCE!",
+            cancelText: "NEMÁM STAŽENOU ZÁLOHU",
+            confirmText: "ANO, MÁM STAŽENOU ZÁLOHU, VÍM, CO DĚLÁM",
+        });
+        if (!modalResult.status)
+            return;
+        
         await restartTestMut.mutateAsync({
             testId,
         });

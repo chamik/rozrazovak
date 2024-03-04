@@ -25,6 +25,7 @@
     "next": "^13.3.0",
     "next-auth": "^4.22.0",
     "react": "^18.2.0",
+    "react-confirm": "^0.3.0-7",
     "react-dom": "^18.2.0",
     "superjson": "1.9.1",
     "zod": "^3.18.0"
