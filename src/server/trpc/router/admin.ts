@@ -361,5 +361,37 @@ export const adminRouter = router({
 
     const st = Buffer.from(JSON.stringify(backup)).toString("base64");
     return st;
-  })
+  }),
+
+  uploadBackup: teacherProcedure.input(z.object({base64Backup: z.string()})).mutation(async ({input}) => {
+    const backupText = Buffer.from(input.base64Backup, "base64").toString();
+    const backupObj = JSON.parse(backupText) as BackupData;
+
+    await prisma.question.deleteMany({});
+    for (const q of backupObj.questions) {
+      await prisma.question.create({
+        data: {
+          questionText: q.questionText,
+          rightAnswer: q.rightAnswer,
+          wrongAnswers: q.wrongAnswers,
+          languageLevel: q.languageLevel,
+        }
+      });
+    }
+
+    await prisma.test.deleteMany({});
+    for (const t of backupObj.tests) {
+      await prisma.test.create({
+        data: {
+          class: t.class,
+          grammarA1Amount: t.grammarA1Amount,
+          grammarA2Amount: t.grammarA2Amount,
+          grammarB1Amount: t.grammarB1Amount,
+          grammarB2Amount: t.grammarB2Amount,
+          grammarC1Amount: t.grammarC1Amount,
+          grammarC2Amount: t.grammarC2Amount,
+        }
+      });
+    }
+  }),
 });

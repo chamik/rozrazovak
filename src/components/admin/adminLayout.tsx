@@ -16,6 +16,10 @@ const ADMIN_TABS = [
         name: 'Gramatika',
         route: '/admin/grammar',
     },
+    {
+        name: 'Zálohy',
+        route: '/admin/backup'
+    }
 ];
 
 export const AdminLayout: React.FC<React.PropsWithChildren> = ({children}) => {
