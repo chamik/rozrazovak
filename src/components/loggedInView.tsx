@@ -79,7 +79,7 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
         return Math.max(0, remainingTimeMinutes);
     }
 
-    if (!test)
+    if (!test || test.status == "PENDING")
         return (
             <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-4 md:p-12">
                 <p className="text-xl mx-6 my-auto text-center font-bold">Aktuálně pro tebe není zadaný žádný test.</p>
@@ -88,8 +88,8 @@ const StudentView: React.FC<StudentViewProps> = (props) => {
 
     if (session?.status == TestStatus.PENDING) return(
         <div className="flex flex-col border-2 rounded-xl shadow-lg h-full p-4 md:p-12 text-center">
-            <p className="text-xl mx-6 pb-2 my-auto font-bold">Test je vyplněný!</p>
-            <p>Správně jsi odpověděl na {session.correctAnswers.length}/{session.grammarQuestionsIds.length} otázek.</p>
+            <p className="text-xl mx-6 pb-2 mt-auto font-bold">Test je vyplněný!</p>
+            <p className="mb-auto">Správně jsi odpověděl na <span className="font-mono font-bold">{session.correctAnswers.length}/{session.grammarQuestionsIds.length}</span> otázek.</p>
         </div>
     );
 

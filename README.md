@@ -25,7 +25,7 @@ cd rozrazovak
 vim .env    # ano, musíš použít vim
 ```
 
-3. Sestav docker container (nebo viz [build.md](https://github.com/chamik/rozrazovak/blob/main/BUILD.md)
+3. Sestav docker container (nebo viz [build.md](https://github.com/chamik/rozrazovak/blob/main/BUILD.md))
 ```
 docker build -t rozrazovak .
 ```

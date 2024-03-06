@@ -231,15 +231,17 @@ const InfoBox: React.FC<CountdownTimerProps> = (props) => {
 
     const cuttingClose = () => timeLeft.minutes < 3;
 
+    const toggleView = () => setEnabled(!enabled);
+
     return (
         <div className="fixed bottom-0 md:right-0 w-full md:w-60 md:mb-6 md:mr-6 p-4 rounded-t-md md:rounded-md flex flex-col gap-3 z-50 bg-purple-100">
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between cursor-pointer" onClick={() => toggleView()}>
                 <p className="font-bold my-auto">Informace</p>
 
                 {enabled ? (
-                    <img src='/svg/chevron-down-solid.svg' alt='aye' className="text-blue-200 w-5 cursor-pointer" onClick={() => setEnabled(false)} />
+                    <img src='/svg/chevron-down-solid.svg' alt='aye' className="text-blue-200 w-5" />
                 ) : (
-                    <img src='/svg/chevron-up-solid.svg' alt='aye' className="text-blue-200 w-5 cursor-pointer" onClick={() => setEnabled(true)} />
+                    <img src='/svg/chevron-up-solid.svg' alt='aye' className="text-blue-200 w-5" />
                 )}
 
             </div>

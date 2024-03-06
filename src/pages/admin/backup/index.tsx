@@ -60,6 +60,8 @@ const AdminBackup: NextPageWithLayout = () => {
     
     return (
         <div className="flex flex-col w-full">
+            <p className="mb-4">Záloha je textový soubor, který obsahuje data o nastavení testů a všech otázkách v databance. Neobsahuje informace o odpovědích žáků (k tomu slouží excel tabulky, které si lze stáhnout po ukončení testu). Doporučuje se stáhnout si novou zálohu po každém větším zásahu do databanky/testů. Zálohy je ideální mít na <span>několika místech</span>, třeba na google disku a na flashce, kdyby se náhodou stala nějaká nehoda.</p>
+
             <button className="ml-0 mb-10 major-button text-purple-700" onClick={async () => await downloadBackup()}>
                 Stáhnout zálohu
             </button>

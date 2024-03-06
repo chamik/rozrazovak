@@ -27,9 +27,9 @@ const Home: NextPage = () => {
                 </div>
             </div>
         )}
-        <div className="pt-auto w-full">
-            <Link href="/about">
-                <p className="text-center mx-4 p-2 underline text-purple-900">O programu</p>
+        <div className="fixed bottom-0 flex w-full">
+            <Link href="/about" className="mx-auto bg-slate-50 px-4 py-2 rounded-full mb-4">
+                <p className="text-center font-bold text-purple-900">O PROGRAMU</p>
             </Link>
         </div>
         </main>
