@@ -46,7 +46,7 @@ const AdminQuestion: NextPageWithLayout = () => {
     }
 
     const getTestData = async (id: number) => {
-        const test = await testQuery.mutateAsync({testId: id});
+        const test = await testQuery.mutateAsync({ testId: id });
 
         if (!test || !avail || avail.length < 6)
             return;
@@ -63,7 +63,7 @@ const AdminQuestion: NextPageWithLayout = () => {
         });
         if (!modalResult.status)
             return;
-        
+
         await restartTestMut.mutateAsync({
             testId,
         });
@@ -135,8 +135,8 @@ const AdminQuestion: NextPageWithLayout = () => {
         <>
             <main className="flex min-h-screen flex-col w-full">
                 {params.has("id") && <Modal onClose={async () => {
-                        goBack();
-                    }}>
+                    goBack();
+                }}>
                     <TestEdit binding={{
                         testId,
                         setTestId,
@@ -167,9 +167,9 @@ const AdminQuestion: NextPageWithLayout = () => {
 type TestsListingProps = {
     tests: Test[] | undefined
     getTestDataCallback: (id: number) => void,
-    toggleTest: (testId:number) => void,
-    restartTest: (testId:number) => void,
-    downloadResults: (testId:number) => void,
+    toggleTest: (testId: number) => void,
+    restartTest: (testId: number) => void,
+    downloadResults: (testId: number) => void,
 };
 
 const TestsListing: React.FC<TestsListingProps> = (props) => {
@@ -196,7 +196,7 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                         <h2 className="font-semibold text-3xl">{toRoman(test.class)}. ročník</h2>
                         <div className="mt-8 text-slate-500">
                             <p>Status:</p>
-                            <TestBadge status={test.status}/>
+                            <TestBadge status={test.status} />
                         </div>
                     </div>
                     <div className="ml-10 flex flex-col bg-purple-100 p-4">
@@ -213,7 +213,7 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                                 <p>C2 <span className="ml-2 font-bold text-slate-700">{test.grammarC2Amount}</span></p>
                             </div>
                         </div>
-                        
+
                     </div>
                     <div className="ml-10 flex flex-col bg-purple-100 p-4">
                         <h3 className="font-semibold text-slate-500 mt-1 mb-2 text-center">Čas testu</h3>
@@ -238,21 +238,16 @@ const TestsListing: React.FC<TestsListingProps> = (props) => {
                             </Link>
                         )}
 
+                        <button className="major-button" onClick={async () => await toggleTest(test.id)}>
+                            {test.status == TestStatus.ACTIVE ? "ZASTAVIT" : "SPUSTIT"}
+                        </button>
+
                         {test.status == TestStatus.PENDING && (
                             <>
-                                <button className="major-button text-yellow-500" onClick={async () => await toggleTest(test.id)}>
-                                    RESTARTOVAT
-                                </button>
                                 <button className="major-button text-red-700" onClick={async () => await restartTest(test.id)}>
-                                    SMAZAT VÝSL.
+                                    SMAZAT
                                 </button>
                             </>
-                        )}
-                        
-                        {(test.status == TestStatus.ACTIVE || test.status == TestStatus.IDLE) && (
-                            <button className="major-button" onClick={async () => await toggleTest(test.id)}>
-                                {test.status == TestStatus.ACTIVE ? "ZASTAVIT" : "SPUSTIT"}
-                            </button>
                         )}
                     </div>
                 </div>
