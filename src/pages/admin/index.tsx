@@ -24,10 +24,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 const AdminHome: NextPageWithLayout = () => {
-    const dashboardDataQuery = trpc.admin.getDashboardData.useQuery();
+    const dashboardDataQuery = trpc.admin.getDashboardData.useQuery(undefined, {refetchInterval: 5000});
     const dashboardData = dashboardDataQuery.data;
 
-    const currentlyTestedQuery = trpc.admin.getCurrentlyTested.useQuery();
+    const currentlyTestedQuery = trpc.admin.getCurrentlyTested.useQuery(undefined, {refetchInterval: 5000});
     const currentlyTested = currentlyTestedQuery.data;
 
     if (!dashboardData || !currentlyTested)

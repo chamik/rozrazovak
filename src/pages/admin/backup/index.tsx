@@ -8,6 +8,9 @@ const AdminBackup: NextPageWithLayout = () => {
     const downloadBackupMut = trpc.admin.downloadBackup.useMutation();
     const uploadBackupMut = trpc.admin.uploadBackup.useMutation();
 
+    const areTestsRunning = trpc.admin.areTestsRunning.useQuery();
+    const runningTests = areTestsRunning.data;
+
     const [file, setFile] = useState<File | undefined>(undefined);
 
     const downloadBackup = async () => {
@@ -48,6 +51,12 @@ const AdminBackup: NextPageWithLayout = () => {
       
         setFile(e.target.files[0]);
     }
+
+    if (runningTests) return (
+        <div className="w-full flex flex-col">
+            <p className="text-center text-lg font-bold">Pro správu záloh musí mít všechny testy status <span className="text-red-700 font-extrabold">VYPNUTÝ</span></p>
+        </div>
+    )
     
     return (
         <div className="flex flex-col w-full">
@@ -56,7 +65,7 @@ const AdminBackup: NextPageWithLayout = () => {
             </button>
 
             <input className="mb-2" type="file" accept="application/json" id="backupInput" onChange={onFileChange}/>
-            <button className="ml-0 major-button text-purple-700" onClick={async () => await uploadBackup()}>
+            <button className="ml-0 major-button text-purple-700" onClick={async () => await uploadBackup()} disabled={runningTests}>
                 Nahrát zálohu
             </button>
         </div>

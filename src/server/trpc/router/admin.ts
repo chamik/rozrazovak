@@ -37,6 +37,17 @@ const questionAmounts = async () => {
   ];
 }
 
+const areTestsRunning = async () => {
+  return (await prisma.test.count({
+    where: {
+      OR: [
+        { status: TestStatus.ACTIVE },
+        { status: TestStatus.PENDING },
+      ],
+    },
+  })) != 0;
+}
+
 export const adminRouter = router({
   getAllQuestions: teacherProcedure.query(async () => {
 
@@ -77,6 +88,10 @@ export const adminRouter = router({
     rightAnswer: z.string().min(1),
     wrongAnswers: z.array(z.string()),
   })).mutation(async ({ input }) => {
+    if (await areTestsRunning()) {
+      return;
+    }
+    
     await prisma.question.update({
       where: {
         id: input.questionId
@@ -98,6 +113,10 @@ export const adminRouter = router({
     rightAnswer: z.string(),
     wrongAnswers: z.array(z.string()),
   })).mutation(async ({ ctx, input }) => {
+    if (await areTestsRunning()) {
+      return;
+    }
+
     const question = await ctx.prisma.question.create({
       data: {
         questionText: input.questionText,
@@ -116,6 +135,10 @@ export const adminRouter = router({
   }),
 
   deleteQuestion: teacherProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+    if (await areTestsRunning()) {
+      return;
+    }
+
     await prisma.question.delete({
       where: {
         id: input.id,
@@ -161,6 +184,10 @@ export const adminRouter = router({
     grammarC1Amount: z.number().min(0),
     grammarC2Amount: z.number().min(0),
   })).mutation(async ({ input }) => {
+    if (await areTestsRunning()) {
+      return;
+    }
+
     await prisma.test.update({
       where: {
         id: input.id
@@ -243,14 +270,7 @@ export const adminRouter = router({
   }),
 
   areTestsRunning: teacherProcedure.query(async () => {
-    return (await prisma.test.findMany({
-      where: {
-        OR: [
-          { status: TestStatus.ACTIVE },
-          { status: TestStatus.PENDING },
-        ],
-      },
-    })).length != 0;
+    return await areTestsRunning();
   }),
 
   downloadResults: teacherProcedure.input(z.object({testId: z.number()})).mutation(async ({ input }) => {
@@ -383,6 +403,10 @@ export const adminRouter = router({
   }),
 
   uploadBackup: teacherProcedure.input(z.object({base64Backup: z.string()})).mutation(async ({input}) => {
+    if (await areTestsRunning()) {
+      return;
+    }
+
     const backupText = Buffer.from(input.base64Backup, "base64").toString();
     const backupObj = JSON.parse(backupText) as BackupData;
 

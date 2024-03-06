@@ -97,6 +97,10 @@ const AdminQuestion: NextPageWithLayout = () => {
             wrongAnswers: ["", "", ""],
         });
 
+        // should never happen
+        if (!question) 
+            return;
+
         setQuestion(question);
         router.push(`/admin/grammar?id=${question.id}`)
     }
