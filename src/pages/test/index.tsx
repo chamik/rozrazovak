@@ -229,7 +229,7 @@ const InfoBox: React.FC<CountdownTimerProps> = (props) => {
         return time < 10 ? `0${time}` : time;
     };
 
-    const cuttingClose = () => timeLeft.minutes < 3;
+    const cuttingClose = () => timeLeft.minutes <3;
 
     const toggleView = () => setEnabled(!enabled);
 
