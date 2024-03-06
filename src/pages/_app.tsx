@@ -38,6 +38,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
                     <title>Rozřazovák</title>
                     <meta name="description" content="Rozřazovací test pro GJP-ME" />
                     <link rel="icon" href="/favicon.ico" />
+                    <script defer data-domain="rozrazovak.gjp-me.cz" src="https://plausible.chamik.eu/js/script.js"></script>
                 </Head>
                 <Component {...pageProps} />
             </Wrapper>
