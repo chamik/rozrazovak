@@ -184,7 +184,8 @@ export const adminRouter = router({
     grammarC1Amount: z.number().min(0),
     grammarC2Amount: z.number().min(0),
   })).mutation(async ({ input }) => {
-    if (await areTestsRunning()) {
+    // disable test editing while running (and permit other tests to be editable)
+    if (await prisma.test.count({ where: { id: input.id, status: "ACTIVE" } }) != 0) {
       return;
     }
 
